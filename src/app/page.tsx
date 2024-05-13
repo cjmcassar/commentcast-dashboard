@@ -1,3 +1,13 @@
+import { IssuesDashboard } from '@/components/layouts/IssuesDashboard';
+
+import { TooltipProvider } from '@/components/ui/tooltip';
+
 export default function Home() {
-	return <div>App components go here</div>;
+  return (
+    <div>
+      <TooltipProvider>
+        <IssuesDashboard />
+      </TooltipProvider>
+    </div>
+  );
 }
