@@ -746,6 +746,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-label@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@radix-ui/react-label@npm:2.0.2"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+    "@radix-ui/react-primitive": 1.0.3
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: fe3bd8902bc523fb5125fa96167a13b8a60d007413787eae9573e4b00b0edff0487c4c0620ea5dc37e6da13833ebc4f8d7e00b6c846f2a5686e7f173672b8dde
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-menu@npm:2.0.6":
   version: 2.0.6
   resolution: "@radix-ui/react-menu@npm:2.0.6"
@@ -944,6 +964,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-toast@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@radix-ui/react-toast@npm:1.1.5"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+    "@radix-ui/primitive": 1.0.1
+    "@radix-ui/react-collection": 1.0.3
+    "@radix-ui/react-compose-refs": 1.0.1
+    "@radix-ui/react-context": 1.0.1
+    "@radix-ui/react-dismissable-layer": 1.0.5
+    "@radix-ui/react-portal": 1.0.4
+    "@radix-ui/react-presence": 1.0.1
+    "@radix-ui/react-primitive": 1.0.3
+    "@radix-ui/react-use-callback-ref": 1.0.1
+    "@radix-ui/react-use-controllable-state": 1.0.1
+    "@radix-ui/react-use-layout-effect": 1.0.1
+    "@radix-ui/react-visually-hidden": 1.0.3
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 6fe821ffaefd0b802e6faf1dffa3d7f69c64cf0972f10eafbdfa5a518f3e2c25c834fe542454e141bd8a35f45b8a1807e6a639e0aefe2a00a26aaeea5057ac7f
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-tooltip@npm:^1.0.7":
   version: 1.0.7
   resolution: "@radix-ui/react-tooltip@npm:1.0.7"
@@ -1105,6 +1156,89 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@supabase/auth-js@npm:2.64.2":
+  version: 2.64.2
+  resolution: "@supabase/auth-js@npm:2.64.2"
+  dependencies:
+    "@supabase/node-fetch": ^2.6.14
+  checksum: 75df9f372046f97b22679e00cbf0a6b095732311c7e161686b31df6558b94368cef9834afcccb4fe6d10755f71be66c3f853770cdd9fb52701cdc2f1a99ff5e9
+  languageName: node
+  linkType: hard
+
+"@supabase/functions-js@npm:2.3.1":
+  version: 2.3.1
+  resolution: "@supabase/functions-js@npm:2.3.1"
+  dependencies:
+    "@supabase/node-fetch": ^2.6.14
+  checksum: 3a6d2f42cab9e40f0fdab6dbc87f51506c5499895d6e1046fe0f491c09313017e79431d7e3f66c39c54dc120884957cd13e7bc3d2d6e1f0b4c2a6b458249ce15
+  languageName: node
+  linkType: hard
+
+"@supabase/node-fetch@npm:2.6.15, @supabase/node-fetch@npm:^2.6.14":
+  version: 2.6.15
+  resolution: "@supabase/node-fetch@npm:2.6.15"
+  dependencies:
+    whatwg-url: ^5.0.0
+  checksum: 9673b49236a56df49eb7ea5cb789cf4e8b1393069b84b4964ac052995e318a34872f428726d128f232139e17c3375a531e45e99edd3e96a25cce60d914b53879
+  languageName: node
+  linkType: hard
+
+"@supabase/postgrest-js@npm:1.15.2":
+  version: 1.15.2
+  resolution: "@supabase/postgrest-js@npm:1.15.2"
+  dependencies:
+    "@supabase/node-fetch": ^2.6.14
+  checksum: 7ea93072b2b05d28f4e52202666d030e86161d7bb606e33f4556db1b7d62af56002ce2eb73140650df6eceeb4e651356b52f4029b4d7e9e1da87300985ffbd31
+  languageName: node
+  linkType: hard
+
+"@supabase/realtime-js@npm:2.9.5":
+  version: 2.9.5
+  resolution: "@supabase/realtime-js@npm:2.9.5"
+  dependencies:
+    "@supabase/node-fetch": ^2.6.14
+    "@types/phoenix": ^1.5.4
+    "@types/ws": ^8.5.10
+    ws: ^8.14.2
+  checksum: 05416dd2618ac90c9e720b06cb6ca080a1757f62d93822ac49f497acc698f2c2fd5e90e44f713ad02ff37f8a4fa158eef8b91d2550210fb04c461c94d6fb4ca1
+  languageName: node
+  linkType: hard
+
+"@supabase/ssr@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@supabase/ssr@npm:0.3.0"
+  dependencies:
+    cookie: ^0.5.0
+    ramda: ^0.29.0
+  peerDependencies:
+    "@supabase/supabase-js": ^2.33.1
+  checksum: 0cde0ed4ecee7fe60701d56b2a392f13bfd3a79e51384a28eebb130fdd5a353f39bbac617bdd4661ff002e32cdff1e1a3c3befeee8bca310b39e6d1a7cbf1479
+  languageName: node
+  linkType: hard
+
+"@supabase/storage-js@npm:2.5.5":
+  version: 2.5.5
+  resolution: "@supabase/storage-js@npm:2.5.5"
+  dependencies:
+    "@supabase/node-fetch": ^2.6.14
+  checksum: 4470499113c15e1124d99048eef0097c7ba431d728e351519ee26948775171d6c6bb41156f8ffb3860009b82b93809af01c9d075ece6000f783f59ce9fd00ee8
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:^2.43.1":
+  version: 2.43.1
+  resolution: "@supabase/supabase-js@npm:2.43.1"
+  dependencies:
+    "@supabase/auth-js": 2.64.2
+    "@supabase/functions-js": 2.3.1
+    "@supabase/node-fetch": 2.6.15
+    "@supabase/postgrest-js": 1.15.2
+    "@supabase/realtime-js": 2.9.5
+    "@supabase/storage-js": 2.5.5
+  checksum: 8294cb212a1a0ddb0e87342519f9e319d563db9541099fc3a7bcd009a991a55781cf7f1fcce0b778b4aa48e7678c39cd869aa87a4aec6db59d34e9b1a34afb25
+  languageName: node
+  linkType: hard
+
 "@swc/helpers@npm:0.5.2":
   version: 0.5.2
   resolution: "@swc/helpers@npm:0.5.2"
@@ -1148,6 +1282,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:*":
+  version: 20.12.12
+  resolution: "@types/node@npm:20.12.12"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 5373983874b9af7c216e7ca5d26b32a8d9829c703a69f1e66f2113598b5be8582c0e009ca97369f1ec9a6282b3f92812208d06eb1e9fc3bd9b939b022303d042
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:^20":
   version: 20.12.4
   resolution: "@types/node@npm:20.12.4"
@@ -1161,6 +1304,13 @@ __metadata:
   version: 4.0.2
   resolution: "@types/parse-json@npm:4.0.2"
   checksum: 5bf62eec37c332ad10059252fc0dab7e7da730764869c980b0714777ad3d065e490627be9f40fc52f238ffa3ac4199b19de4127196910576c2fe34dd47c7a470
+  languageName: node
+  linkType: hard
+
+"@types/phoenix@npm:^1.5.4":
+  version: 1.6.4
+  resolution: "@types/phoenix@npm:1.6.4"
+  checksum: 0f13849602db6d9a2a4b9d96386c45471acedf2bc3d6bf6b3289876fa73f0fe0e84c8466bd55c4f2763d33e142e5311c220820fed9ac2a21d9126f1f70a7338f
   languageName: node
   linkType: hard
 
@@ -1187,6 +1337,15 @@ __metadata:
     "@types/prop-types": "*"
     csstype: ^3.0.2
   checksum: 093c0e350552e61393e2ba30169aa620e2e64c1e2d0ff38efd2a7549ded689b6ab6bffb65fe0f7ef9e143174de54442d942bd70c014649f464c52465701208d8
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.5.10":
+  version: 8.5.10
+  resolution: "@types/ws@npm:8.5.10"
+  dependencies:
+    "@types/node": "*"
+  checksum: 3ec416ea2be24042ebd677932a462cf16d2080393d8d7d0b1b3f5d6eaa4a7387aaf0eefb99193c0bfd29444857cf2e0c3ac89899e130550dc6c14ada8a46d25e
   languageName: node
   linkType: hard
 
@@ -1940,9 +2099,13 @@ __metadata:
     "@radix-ui/react-dialog": ^1.0.5
     "@radix-ui/react-dropdown-menu": ^2.0.6
     "@radix-ui/react-icons": ^1.3.0
+    "@radix-ui/react-label": ^2.0.2
     "@radix-ui/react-slot": ^1.0.2
     "@radix-ui/react-tabs": ^1.0.4
+    "@radix-ui/react-toast": ^1.1.5
     "@radix-ui/react-tooltip": ^1.0.7
+    "@supabase/ssr": ^0.3.0
+    "@supabase/supabase-js": ^2.43.1
     "@trivago/prettier-plugin-sort-imports": ^4.3.0
     "@types/node": ^20
     "@types/react": ^18
@@ -1970,6 +2133,13 @@ __metadata:
   version: 0.0.1
   resolution: "concat-map@npm:0.0.1"
   checksum: 902a9f5d8967a3e2faf138d5cb784b9979bad2e6db5357c5b21c568df4ebe62bcb15108af1b2253744844eb964fc023fbd9afbbbb6ddd0bcc204c6fb5b7bf3af
+  languageName: node
+  linkType: hard
+
+"cookie@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "cookie@npm:0.5.0"
+  checksum: 1f4bd2ca5765f8c9689a7e8954183f5332139eb72b6ff783d8947032ec1fdf43109852c178e21a953a30c0dd42257828185be01b49d1eb1a67fd054ca588a180
   languageName: node
   linkType: hard
 
@@ -4619,6 +4789,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ramda@npm:^0.29.0":
+  version: 0.29.1
+  resolution: "ramda@npm:0.29.1"
+  checksum: df7c627597a66d5f317f6ba77ad17d7ba818efc9c2c4a638440bc23f2c651e823970ea05b05a28895738c0e4b738fadbdc17b2c97b3ad922826febc09c859c44
+  languageName: node
+  linkType: hard
+
 "react-dom@npm:^18":
   version: 18.2.0
   resolution: "react-dom@npm:18.2.0"
@@ -5368,6 +5545,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tr46@npm:~0.0.3":
+  version: 0.0.3
+  resolution: "tr46@npm:0.0.3"
+  checksum: 726321c5eaf41b5002e17ffbd1fb7245999a073e8979085dacd47c4b4e8068ff5777142fc6726d6ca1fd2ff16921b48788b87225cbc57c72636f6efa8efbffe3
+  languageName: node
+  linkType: hard
+
 "ts-api-utils@npm:^1.0.1":
   version: 1.3.0
   resolution: "ts-api-utils@npm:1.3.0"
@@ -5589,6 +5773,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"webidl-conversions@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "webidl-conversions@npm:3.0.1"
+  checksum: c92a0a6ab95314bde9c32e1d0a6dfac83b578f8fa5f21e675bc2706ed6981bc26b7eb7e6a1fab158e5ce4adf9caa4a0aee49a52505d4d13c7be545f15021b17c
+  languageName: node
+  linkType: hard
+
+"whatwg-url@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "whatwg-url@npm:5.0.0"
+  dependencies:
+    tr46: ~0.0.3
+    webidl-conversions: ^3.0.0
+  checksum: b8daed4ad3356cc4899048a15b2c143a9aed0dfae1f611ebd55073310c7b910f522ad75d727346ad64203d7e6c79ef25eafd465f4d12775ca44b90fa82ed9e2c
+  languageName: node
+  linkType: hard
+
 "which-boxed-primitive@npm:^1.0.2":
   version: 1.0.2
   resolution: "which-boxed-primitive@npm:1.0.2"
@@ -5706,6 +5907,21 @@ __metadata:
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
   checksum: 159da4805f7e84a3d003d8841557196034155008f817172d4e986bd591f74aa82aa7db55929a54222309e01079a65a92a9e6414da5a6aa4b01ee44a511ac3ee5
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.14.2":
+  version: 8.17.0
+  resolution: "ws@npm:8.17.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 147ef9eab0251364e1d2c55338ad0efb15e6913923ccbfdf20f7a8a6cb8f88432bcd7f4d8f66977135bfad35575644f9983201c1a361019594a4e53977bf6d4e
   languageName: node
   linkType: hard
 
