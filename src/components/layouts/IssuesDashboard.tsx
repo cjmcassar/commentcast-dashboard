@@ -1,3 +1,6 @@
+'use client';
+
+import { signOut } from '@/app/login/actions';
 import {
   File,
   Home,
@@ -16,6 +19,7 @@ import {
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { Badge } from '@/components/ui/badge';
 import {
@@ -61,7 +65,33 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
+import { useToast } from '../ui/use-toast';
+
 export function IssuesDashboard() {
+  const router = useRouter();
+  // const posthog = usePostHog();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    // await signOut();
+
+    try {
+      await signOut();
+      toast({
+        title: 'Signed Out',
+        description: 'You have been successfully signed out.',
+      });
+      // posthog?.capture('sign-out', {
+      //   distinctId: session?.user?.id,
+      //   email: session?.user?.email,
+      // });
+      setTimeout(() => {
+        router.push('/login');
+      }, 1000);
+    } catch (error) {
+      console.error('Client-side sign out error:', error);
+    }
+  };
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -254,7 +284,9 @@ export function IssuesDashboard() {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSignOut}>
+                Logout
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
