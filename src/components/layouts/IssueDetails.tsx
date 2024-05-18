@@ -20,26 +20,36 @@ type Props = {
   slug: string;
 };
 
-interface Issue {
-  browser_name: string | null;
-  created_at: string;
-  id: number;
-  logs: Array<any>; // Consider defining a more specific type for log entries if possible
-  platform_arch: string;
-  platform_os: string;
+class Issue {
+  browser_name: string | null = null;
+  created_at: string = '';
+  id: number = 0;
+  logs:
+    | Array<{
+        level: string;
+        text: string;
+        url?: string;
+      }>
+    | undefined = [];
+  platform_arch: string = '';
+  platform_os: string = '';
   primary_display_dimensions: {
     primary_display_width: string;
     primary_display_height: string;
-  } | null;
-  screenshot: string;
-  url: string | null;
+  } | null = null;
+  screenshot: string = '/placeholder.svg';
+  url: string | null = null;
+
+  constructor(data?: Partial<Issue>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
 }
 
 const IssueDetails = ({ slug }: Props) => {
-  const [issue, setIssue] = useState<Issue | undefined>();
+  const [issue, setIssue] = useState<Issue>(new Issue());
   const supabase = createClient();
-
-  let tempSlug = 3;
 
   useEffect(() => {
     const fetchIssue = async () => {
@@ -51,13 +61,15 @@ const IssueDetails = ({ slug }: Props) => {
       if (error) {
         console.error('Error fetching issue:', error);
         // Set default values if there's an error or no data
+        setIssue(new Issue());
       } else {
-        setIssue(data || undefined);
+        setIssue(new Issue(data));
       }
     };
 
     fetchIssue();
-  }, [tempSlug]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
 
   console.log('issue', issue);
 
@@ -73,10 +85,10 @@ const IssueDetails = ({ slug }: Props) => {
             <div className="grid grid-cols-2 gap-2">
               <Image
                 alt="Product image"
-                className="aspect-square rounded-md "
+                className="aspect-square rounded-md object-contain"
                 height={245}
                 width={640}
-                src={issue?.screenshot || '/placeholder.svg'}
+                src={issue.screenshot}
               />
               <Table>
                 <TableHeader>
@@ -87,47 +99,42 @@ const IssueDetails = ({ slug }: Props) => {
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-medium">
-                      {issue?.logs && issue.logs.length > 0 ? (
-                        <div>
-                          <div>
-                            <strong>{issue.logs[0].level}:</strong>{' '}
-                            {JSON.stringify(issue.logs[0].text)}
-                            {issue.logs[0].url && (
-                              <a href={issue.logs[0].url}>Source</a>
-                            )}
-                          </div>
-                          {issue.logs.length > 1 && (
-                            <div>
-                              <em>and {issue.logs.length - 1} more...</em>
-                            </div>
-                          )}
-                        </div>
+                      {issue.logs && issue.logs.length > 0 ? (
+                        <ul>
+                          {issue.logs.map((log, index) => (
+                            <li key={index}>
+                              <strong>{log.level}:</strong>{' '}
+                              {JSON.stringify(log.text)}
+                              {log.url && <a href={log.url}>Source</a>}
+                            </li>
+                          ))}
+                        </ul>
                       ) : null}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>{issue?.platform_arch}</TableCell>
+                    <TableCell>{issue.platform_arch}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>{issue?.platform_os}</TableCell>
+                    <TableCell>{issue.platform_os}</TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="hidden md:table-cell">
-                      {issue?.url}
+                      {issue.url}
                     </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell className="hidden md:table-cell">
-                      {issue?.primary_display_dimensions
+                      {issue.primary_display_dimensions
                         ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
                         : 'N/A'}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>{issue?.browser_name}</TableCell>
+                    <TableCell>{issue.browser_name}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell>{issue?.created_at}</TableCell>
+                    <TableCell>{issue.created_at}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
