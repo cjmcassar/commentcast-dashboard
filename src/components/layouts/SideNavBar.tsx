@@ -1,12 +1,4 @@
-import {
-  Home,
-  LineChart,
-  MoreHorizontal,
-  Package2,
-  PanelLeft,
-  Search,
-  Settings,
-} from 'lucide-react';
+import { Home, Package2, Settings } from 'lucide-react';
 
 import React from 'react';
 
@@ -20,7 +12,7 @@ import {
 
 type Props = {};
 
-const SideNavBar = (props: Props) => {
+const SideNavBar = () => {
   return (
     <div>
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -35,7 +27,7 @@ const SideNavBar = (props: Props) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Link
-                href="#"
+                href="/"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >
                 <Home className="h-5 w-5" />
