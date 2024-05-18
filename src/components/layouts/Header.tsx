@@ -1,6 +1,6 @@
 'use client';
 
-import { signOut } from '@/app/login/actions';
+import { signOut } from '@/app/(auth)/signout/actions';
 import { createClient } from '@/utils/supabase/client';
 import { Home, LineChart, Package2, PanelLeft, Search } from 'lucide-react';
 
@@ -83,6 +83,7 @@ const Header = (props: Props) => {
     };
 
     fetchUserInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

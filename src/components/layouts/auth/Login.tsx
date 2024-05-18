@@ -1,7 +1,7 @@
 'use client';
 
 // import { usePostHog } from 'posthog-js/react';
-import { signOut } from '@/app/login/actions';
+import { signOut } from '@/app/(auth)/signout/actions';
 
 import { FormEvent, useState } from 'react';
 
