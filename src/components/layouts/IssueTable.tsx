@@ -39,7 +39,11 @@ interface Issue {
   browser_name: string | null;
   created_at: string;
   id: number;
-  logs: Array<any>; // Consider defining a more specific type for log entries if possible
+  logs: Array<{
+    level: string;
+    text: string;
+    url?: string;
+  }>;
   platform_arch: string;
   platform_os: string;
   primary_display_dimensions: {
@@ -70,6 +74,7 @@ const IssueTable = (props: Props) => {
     };
 
     fetchIssues();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
