@@ -1,11 +1,11 @@
 'use client';
 
 import { signOut } from '@/app/login/actions';
+import { createClient } from '@/utils/supabase/client';
 import { Home, LineChart, Package2, PanelLeft, Search } from 'lucide-react';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -24,6 +24,10 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useToast } from '../ui/use-toast';
 
 type Props = {};
+
+interface UserInfo {
+  email: string;
+}
 
 const Header = (props: Props) => {
   const router = useRouter();
@@ -51,9 +55,38 @@ const Header = (props: Props) => {
     }
   };
 
+  const supabase = createClient();
+  const [userInfo, setUserInfo] = useState<UserInfo | null>();
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session) {
+          const userEmail = session.user?.email || '';
+          console.log('userEmail', userEmail);
+          setUserInfo({
+            email: userEmail,
+          });
+        } else {
+          setUserInfo(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch user information.',
+        });
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   return (
     <div>
-      {' '}
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background py-4 px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
         <Sheet>
           <SheetTrigger asChild>
@@ -104,15 +137,10 @@ const Header = (props: Props) => {
             <Button
               variant="outline"
               size="icon"
-              className="overflow-hidden rounded-full"
+              className="overflow-hidden rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center"
+              style={{ width: '36px', height: '36px' }}
             >
-              <Image
-                src="/placeholder-user.jpg"
-                width={36}
-                height={36}
-                alt="Avatar"
-                className="overflow-hidden rounded-full"
-              />
+              {userInfo?.email[0].toUpperCase()}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
