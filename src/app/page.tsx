@@ -1,4 +1,4 @@
-import { IssuesDashboard } from '@/components/layouts/IssuesDashboard';
+import { IssuesDashboard } from '@/components/layouts/main-dashboard/IssuesDashboard';
 import { createClient } from '@/utils/supabase/server';
 
 import { redirect } from 'next/navigation';
@@ -9,7 +9,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 // todo: Clean up authentication flow (consider creating a state management system)
 
 // Issue Management
-// todo: Simplify the issue details page to make it cleaner like the issues dashboard page
 // todo: Make issues clickable and redirect to the issue details page
 // todo: Allow users to view only their own issues on the dashboard
 // todo: Make the issue details link shareable (maybe require email as verification)
@@ -18,7 +17,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 // User Interface Enhancements
 // todo: Add a basic settings page
-// todo: Make the support button open an email
 // todo: Add in feedback mechanism when screenshot is taken
 
 export default async function Home() {

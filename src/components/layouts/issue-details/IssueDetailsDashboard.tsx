@@ -1,8 +1,8 @@
 import React from 'react';
 
-import Header from './Header';
+import Header from '../Header';
+import SideNavBar from '../SideNavBar';
 import IssueDetails from './IssueDetails';
-import SideNavBar from './SideNavBar';
 
 type Props = {
   slug: string;

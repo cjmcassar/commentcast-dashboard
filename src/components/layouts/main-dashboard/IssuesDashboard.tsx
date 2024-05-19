@@ -1,6 +1,6 @@
-import Header from './Header';
+import Header from '../Header';
+import SideNavBar from '../SideNavBar';
 import IssueTable from './IssueTable';
-import SideNavBar from './SideNavBar';
 
 export function IssuesDashboard() {
   return (

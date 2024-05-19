@@ -1,7 +1,7 @@
 import Header from '@/components/layouts/Header';
-import IssueDetails from '@/components/layouts/IssueDetails';
-import IssueDetailsDashboard from '@/components/layouts/IssueDetailsDashboard';
 import SideNavBar from '@/components/layouts/SideNavBar';
+import IssueDetails from '@/components/layouts/issue-details/IssueDetails';
+import IssueDetailsDashboard from '@/components/layouts/issue-details/IssueDetailsDashboard';
 
 import { TooltipProvider } from '@/components/ui/tooltip';
 
