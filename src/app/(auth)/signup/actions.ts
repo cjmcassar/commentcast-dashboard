@@ -3,24 +3,24 @@
 import { createClient } from '@/utils/supabase/server';
 
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 
-export async function signup(formData: FormData) {
+export async function signup(email: string, password: string) {
   const supabase = createClient();
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
   const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+    email: email,
+    password: password,
   };
 
   const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    redirect('/error');
+    console.error(error);
+    return { error: error.message };
   }
 
   revalidatePath('/', 'layout');
-  redirect('/');
+  return { success: true, error: null };
 }
