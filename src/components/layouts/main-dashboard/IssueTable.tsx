@@ -6,6 +6,7 @@ import { MoreHorizontal, Share, TrashIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -57,6 +58,7 @@ interface Issue {
 const IssueTable = (props: Props) => {
   const [issues, setIssues] = useState<Issue[]>([]);
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchIssues = async () => {
@@ -92,7 +94,7 @@ const IssueTable = (props: Props) => {
               <CardContent>
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="pointer-events-none">
                       <TableHead>Screenshot</TableHead>
                       <TableHead>Logs</TableHead>
                       <TableHead>Platform Arch</TableHead>
@@ -109,7 +111,11 @@ const IssueTable = (props: Props) => {
                   </TableHeader>
                   <TableBody>
                     {issues.map((issue) => (
-                      <TableRow key={issue.id}>
+                      <TableRow
+                        key={issue.id}
+                        className="cursor-pointer"
+                        onClick={() => router.push(`/issues/${issue.id}`)}
+                      >
                         <TableCell className="hidden sm:table-cell">
                           <Image
                             alt="Issue screenshot"
@@ -122,6 +128,7 @@ const IssueTable = (props: Props) => {
                             width="64"
                           />
                         </TableCell>
+
                         <TableCell className="font-medium">
                           {issue.logs.length > 0 ? (
                             <div>
@@ -140,17 +147,23 @@ const IssueTable = (props: Props) => {
                             </div>
                           ) : null}
                         </TableCell>
+
                         <TableCell>{issue.platform_arch}</TableCell>
+
                         <TableCell>{issue.platform_os}</TableCell>
+
                         <TableCell className="hidden md:table-cell">
                           {issue.url}
                         </TableCell>
+
                         <TableCell className="hidden md:table-cell">
                           {issue.primary_display_dimensions
                             ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
                             : 'N/A'}
                         </TableCell>
+
                         <TableCell>{issue.browser_name}</TableCell>
+
                         <TableCell>{issue.created_at}</TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -159,17 +172,22 @@ const IssueTable = (props: Props) => {
                                 aria-haspopup="true"
                                 variant="ghost"
                                 size="icon"
+                                onClick={(e) => e.stopPropagation()}
                               >
                                 <MoreHorizontal className="w-4 h-4" />
                                 <span className="sr-only">Open options</span>
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Share className="w-4 h-4" />
                                 <span className="ml-2 ">Share Issue</span>
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <TrashIcon className="w-4 h-4" />
                                 <span className="ml-2 ">Delete</span>
                               </DropdownMenuItem>
