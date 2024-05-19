@@ -42,6 +42,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { useToast } from '@/components/ui/use-toast';
 
 type Props = {};
 
@@ -68,8 +69,25 @@ const IssueTable = (props: Props) => {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
+
   const supabase = createClient();
   const router = useRouter();
+  const { toast } = useToast();
+
+  const generateShareableLink = (issueId: number) => {
+    return `${window.location.origin}/issues/${issueId}`;
+  };
+
+  // Function to handle sharing the issue
+  const handleShareClick = (issueId: number) => {
+    const shareableLink = generateShareableLink(issueId);
+    navigator.clipboard.writeText(shareableLink).then(() => {
+      toast({
+        title: `Shareable link copied to clipboard!`,
+        description: 'Share the link with your team.',
+      });
+    });
+  };
 
   const deleteIssue = async (issueId: number) => {
     const { error } = await supabase
@@ -220,7 +238,10 @@ const IssueTable = (props: Props) => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
                               <DropdownMenuItem
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleShareClick(issue.id);
+                                }}
                               >
                                 <Share className="w-4 h-4" />
                                 <span className="ml-2 ">Share Issue</span>
