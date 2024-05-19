@@ -34,6 +34,9 @@ const Header = (props: Props) => {
   // const posthog = usePostHog();
   const { toast } = useToast();
 
+  const supportEmailLink =
+    'mailto:christopherjcassar@gmail.com?subject=Bugs%20or%20Feedback&body=Please%20describe%20your%20issue%20or%20feedback%20in%20detail%20here.';
+
   const handleSignOut = async () => {
     // await signOut();
 
@@ -147,8 +150,12 @@ const Header = (props: Props) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
+            <DropdownMenuItem>
+              <a href={supportEmailLink} target="_blank" rel="noreferrer">
+                Support
+              </a>
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
