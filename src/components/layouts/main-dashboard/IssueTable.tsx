@@ -18,6 +18,15 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -57,8 +66,39 @@ interface Issue {
 
 const IssueTable = (props: Props) => {
   const [issues, setIssues] = useState<Issue[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
   const supabase = createClient();
   const router = useRouter();
+
+  const deleteIssue = async (issueId: number) => {
+    const { error } = await supabase
+      .from('issue_snapshots')
+      .delete()
+      .eq('id', issueId);
+
+    if (error) {
+      console.error('Error deleting issue:', error);
+      return;
+    }
+
+    // Refresh the issues list after deletion
+    setIssues((prevIssues) =>
+      prevIssues.filter((issue) => issue.id !== issueId)
+    );
+  };
+
+  const handleDeleteClick = (issueId: number) => {
+    setSelectedIssueId(issueId);
+    setIsDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (selectedIssueId !== null) {
+      deleteIssue(selectedIssueId);
+    }
+    setIsDialogOpen(false);
+  };
 
   useEffect(() => {
     const fetchIssues = async () => {
@@ -185,8 +225,13 @@ const IssueTable = (props: Props) => {
                                 <Share className="w-4 h-4" />
                                 <span className="ml-2 ">Share Issue</span>
                               </DropdownMenuItem>
+
                               <DropdownMenuItem
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteClick(issue.id);
+                                  // deleteIssue(issue.id);
+                                }}
                               >
                                 <TrashIcon className="w-4 h-4" />
                                 <span className="ml-2 ">Delete</span>
@@ -208,6 +253,25 @@ const IssueTable = (props: Props) => {
           </TabsContent>
         </Tabs>
       </main>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button className="hidden">Open Dialog</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the
+              issue.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button onClick={confirmDelete}>Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
