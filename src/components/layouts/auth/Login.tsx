@@ -116,11 +116,10 @@ export default function LoginForm({
         </form>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/register" className="underline">
+          <Link href="/signup" className="underline">
             Sign up
           </Link>
         </div>
-        <Button onClick={signOut}>Logout</Button>
       </CardContent>
     </Card>
   );
