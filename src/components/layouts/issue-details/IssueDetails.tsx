@@ -53,10 +53,12 @@ const IssueDetails = ({ slug }: Props) => {
 
   useEffect(() => {
     const fetchIssue = async () => {
+      const user = (await supabase.auth.getSession()).data.session?.user;
       const { data, error } = await supabase
         .from('issue_snapshots')
         .select('*')
         .eq('id', slug)
+        .eq('uuid', user?.id)
         .single();
       if (error) {
         console.error('Error fetching issue:', error);

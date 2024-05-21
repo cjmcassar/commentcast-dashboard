@@ -120,9 +120,11 @@ const IssueTable = (props: Props) => {
 
   useEffect(() => {
     const fetchIssues = async () => {
+      const user = (await supabase.auth.getSession()).data.session?.user;
       const { data, error } = await supabase
         .from('issue_snapshots')
-        .select('*');
+        .select('*')
+        .eq('uuid', user?.id);
 
       if (error) {
         console.error('Error fetching issues:', error);
