@@ -34,6 +34,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
   Table,
   TableBody,
   TableCell,
@@ -69,6 +76,9 @@ const IssueTable = (props: Props) => {
   const [issues, setIssues] = useState<Issue[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalIssues, setTotalIssues] = useState(0);
+  const [issuesPerPage] = useState(5);
 
   const supabase = createClient();
   const router = useRouter();
@@ -120,11 +130,13 @@ const IssueTable = (props: Props) => {
 
   useEffect(() => {
     const fetchIssues = async () => {
+      const startIndex = (currentPage - 1) * issuesPerPage;
       const user = (await supabase.auth.getSession()).data.session?.user;
-      const { data, error } = await supabase
+      const { data, error, count } = await supabase
         .from('issue_snapshots')
-        .select('*')
-        .eq('uuid', user?.id);
+        .select('*', { count: 'exact' })
+        .eq('uuid', user?.id)
+        .range(startIndex, startIndex + issuesPerPage);
 
       if (error) {
         console.error('Error fetching issues:', error);
@@ -133,11 +145,12 @@ const IssueTable = (props: Props) => {
 
       console.log('issue_snapshots data from supabase:', data);
       setIssues(data);
+      setTotalIssues(count || 0);
     };
 
     fetchIssues();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentPage, issuesPerPage]);
 
   return (
     <div>
@@ -194,7 +207,9 @@ const IssueTable = (props: Props) => {
                             <div>
                               <div>
                                 <strong>{issue.logs[0].level}:</strong>{' '}
-                                {JSON.stringify(issue.logs[0].text)}
+                                {issue.logs[0].text.length > 50
+                                  ? `${issue.logs[0].text.substring(0, 50)}...`
+                                  : issue.logs[0].text}
                                 {issue.logs[0].url && (
                                   <a href={issue.logs[0].url}>Source</a>
                                 )}
@@ -205,7 +220,9 @@ const IssueTable = (props: Props) => {
                                 </div>
                               )}
                             </div>
-                          ) : null}
+                          ) : (
+                            'No logs detected.'
+                          )}
                         </TableCell>
 
                         <TableCell>{issue.platform_arch}</TableCell>
@@ -213,7 +230,9 @@ const IssueTable = (props: Props) => {
                         <TableCell>{issue.platform_os}</TableCell>
 
                         <TableCell className="hidden md:table-cell">
-                          {issue.url}
+                          {issue.url && issue.url.length > 30
+                            ? `${issue.url.substring(0, 30)}...`
+                            : issue.url}
                         </TableCell>
 
                         <TableCell className="hidden md:table-cell">
@@ -224,7 +243,19 @@ const IssueTable = (props: Props) => {
 
                         <TableCell>{issue.browser_name}</TableCell>
 
-                        <TableCell>{issue.created_at}</TableCell>
+                        <TableCell>
+                          {new Date(issue.created_at).toLocaleDateString(
+                            'en-UK',
+                            {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: 'numeric',
+                              minute: 'numeric',
+                              hour12: true,
+                            }
+                          )}
+                        </TableCell>
                         <TableCell>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -268,8 +299,45 @@ const IssueTable = (props: Props) => {
                 </Table>
               </CardContent>
               <CardFooter>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        className={
+                          currentPage === 1
+                            ? 'pointer-events-none opacity-50'
+                            : undefined
+                        }
+                        onClick={() => {
+                          setCurrentPage(currentPage - 1);
+                        }}
+                      />
+                    </PaginationItem>
+
+                    <PaginationItem>
+                      <PaginationNext
+                        className={
+                          currentPage * issuesPerPage >= totalIssues
+                            ? 'pointer-events-none opacity-50'
+                            : undefined
+                        }
+                        onClick={() => {
+                          if (currentPage * issuesPerPage < totalIssues) {
+                            setCurrentPage(currentPage + 1);
+                          }
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+
                 <div className="text-xs text-muted-foreground">
-                  Showing <strong>1-10</strong> of <strong>32</strong> products
+                  Showing{' '}
+                  <strong>
+                    {currentPage * issuesPerPage - issuesPerPage + 1}-
+                    {Math.min(currentPage * issuesPerPage, totalIssues)}
+                  </strong>{' '}
+                  of <strong>{totalIssues}</strong> issues
                 </div>
               </CardFooter>
             </Card>
