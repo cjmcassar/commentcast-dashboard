@@ -73,8 +73,6 @@ const IssueDetails = ({ slug }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
-  console.log('issue', issue);
-
   return (
     <div>
       <Card className="overflow-hidden">
