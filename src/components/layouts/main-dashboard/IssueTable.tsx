@@ -173,7 +173,7 @@ const IssueTable = (props: Props) => {
                       <TableHead>Platform Arch</TableHead>
                       <TableHead>Platform OS</TableHead>
                       <TableHead className="hidden md:table-cell">
-                        URL
+                        Source URL
                       </TableHead>
                       <TableHead className="hidden md:table-cell">
                         Primary Display
