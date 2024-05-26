@@ -6,7 +6,7 @@ type Props = {};
 
 export default function PwdResetPage(props: Props) {
   return (
-    <div className="container">
+    <div className="container flex justify-center items-center min-h-screen">
       <PwdReset />
     </div>
   );

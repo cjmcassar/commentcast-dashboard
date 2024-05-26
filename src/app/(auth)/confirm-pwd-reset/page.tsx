@@ -6,7 +6,7 @@ type Props = {};
 
 export default function ConfirmPwdResetPage({}: Props) {
   return (
-    <div className="container">
+    <div className="container flex justify-center items-center min-h-screen">
       <ConfirmPwdReset />
     </div>
   );

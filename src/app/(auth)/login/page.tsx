@@ -5,7 +5,7 @@ import { login } from './actions';
 
 export default function LoginPage() {
   return (
-    <div className="container">
+    <div className="container flex justify-center items-center min-h-screen">
       <LoginForm login={login} signup={signup} />
     </div>
   );
