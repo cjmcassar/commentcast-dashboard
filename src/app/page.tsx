@@ -6,18 +6,21 @@ import { redirect } from 'next/navigation';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 // Authentication and User Management
-// todo: Clean up authentication flow (consider creating a state management system)
+// 1. Add in dev env so that the CE can test locally easily
+// 2.
 
 // Issue Management
-// todo: Make issues clickable and redirect to the issue details page
-// todo: Allow users to view only their own issues on the dashboard
-// todo: Make the issue details link shareable (maybe require email as verification)
-// todo: Require confirmation to delete an issue
-// todo: Add multimodal AI to digest issues and summarize them
+// 1.
+
+// 2.
+// 3. TODO: require email confirmation of the person you're sharing with
+// 4. todo: Add multimodal AI to digest issues and summarize them
 
 // User Interface Enhancements
-// todo: Add a basic settings page
-// todo: Add in feedback mechanism when screenshot is taken
+// 1. todo: Add a basic settings page
+// 2.
+// 3.
+// 4.
 
 export default async function Home() {
   const supabase = createClient();
