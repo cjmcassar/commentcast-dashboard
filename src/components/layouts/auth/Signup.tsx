@@ -1,7 +1,7 @@
 'use client';
 
-// import { usePostHog } from 'posthog-js/react';
 import { signup } from '@/app/(auth)/signup/actions';
+import { usePostHog } from 'posthog-js/react';
 
 import { FormEvent, useState } from 'react';
 
@@ -28,7 +28,7 @@ export default function Signup() {
 
   const router = useRouter();
   const { toast } = useToast();
-  //   const posthog = usePostHog();
+  const posthog = usePostHog();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,6 +42,9 @@ export default function Signup() {
       toast({
         title: 'Success',
         description: `${username} successfully created an account. Please login to continue.`,
+      });
+      posthog.capture('sign-up', {
+        email: username,
       });
       router.push('/login');
     }
