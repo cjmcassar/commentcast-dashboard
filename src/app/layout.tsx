@@ -1,5 +1,7 @@
+import { PHProvider } from '@/components/config/PostHogProvider';
 import type { Metadata } from 'next';
 
+import dynamic from 'next/dynamic';
 import { Inter } from 'next/font/google';
 
 import { Toaster } from '@/components/ui/toaster';
@@ -13,6 +15,13 @@ export const metadata: Metadata = {
   description: 'Locate and share issues with your team.',
 };
 
+const PostHogPageView = dynamic(
+  () => import('@/components/config/PostHogPageView'),
+  {
+    ssr: false,
+  }
+);
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -21,7 +30,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main>{children}</main> <Toaster />
+        <PHProvider>
+          <PostHogPageView />
+          <main>{children}</main> <Toaster />
+        </PHProvider>
       </body>
     </html>
   );
