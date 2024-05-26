@@ -1,7 +1,7 @@
 'use client';
 
-// import { usePostHog } from 'posthog-js/react';
-import { signOut } from '@/app/(auth)/signout/actions';
+import { createClient } from '@/utils/supabase/client';
+import { usePostHog } from 'posthog-js/react';
 
 import { FormEvent, useState } from 'react';
 
@@ -20,19 +20,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function LoginForm({
-  login,
-  signup,
-}: {
-  login: any;
-  signup: any;
-}) {
+export default function LoginForm({ login }: { login: any; signup: any }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const router = useRouter();
   const { toast } = useToast();
-  //   const posthog = usePostHog();
+  const posthog = usePostHog();
+  const supabase = createClient();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -52,13 +47,13 @@ export default function LoginForm({
           title: `${username} logged in`,
           description: 'Redirecting to your dashboard...',
         });
-        // posthog.identify(username, {
-        //   email: username,
-        // });
-        // posthog.capture('sign-in', {
-        //   distinctId: username,
-        //   email: username,
-        // });
+        posthog.identify(username, {
+          userId: (await supabase.auth.getSession()).data.session?.user.id,
+          email: username,
+        });
+        posthog.capture('sign-in', {
+          email: username,
+        });
         setTimeout(() => {
           router.push('/');
         }, 1000);
