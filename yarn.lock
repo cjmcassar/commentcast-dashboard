@@ -2119,6 +2119,7 @@ __metadata:
     lucide-react: ^0.363.0
     next: 14.1.4
     postcss: ^8
+    posthog-js: ^1.135.2
     prettier: ^3.2.5
     react: ^18
     react-dom: ^18
@@ -2940,6 +2941,13 @@ __metadata:
   dependencies:
     reusify: ^1.0.4
   checksum: a8c5b26788d5a1763f88bae56a8ddeee579f935a831c5fe7a8268cea5b0a91fbfe705f612209e02d639b881d7b48e461a50da4a10cfaa40da5ca7cc9da098d88
+  languageName: node
+  linkType: hard
+
+"fflate@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "fflate@npm:0.4.8"
+  checksum: 29d8cbe44d5e7f53e7f5a160ac7f9cc025480c7b3bfd85c5f898cbe20dfa2dad4732daa534982664bf30b35896a90af44ea33ede5d94c5ffd1b8b0c0a0a56ca2
   languageName: node
   linkType: hard
 
@@ -4728,6 +4736,23 @@ __metadata:
     picocolors: ^1.0.0
     source-map-js: ^1.2.0
   checksum: 649f9e60a763ca4b5a7bbec446a069edf07f057f6d780a5a0070576b841538d1ecf7dd888f2fbfd1f76200e26c969e405aeeae66332e6927dbdc8bdcb90b9451
+  languageName: node
+  linkType: hard
+
+"posthog-js@npm:^1.135.2":
+  version: 1.135.2
+  resolution: "posthog-js@npm:1.135.2"
+  dependencies:
+    fflate: ^0.4.8
+    preact: ^10.19.3
+  checksum: 87aeb6bd068b42a5179e8b7a2fc1a7fa2fbb6ccf997fbcef4b6d5a8c6dcbbc638212c8ae38cafb4224502d9b5db42fef4cd538005bcdfb65b6fa68a41aa260c7
+  languageName: node
+  linkType: hard
+
+"preact@npm:^10.19.3":
+  version: 10.22.0
+  resolution: "preact@npm:10.22.0"
+  checksum: 1b7493abec35d5042094d652e5cb980de00a0ef39e130b2f20485214d273ef0cebafa2000aa9fa4ef9dad952bd4e746ad3714f42206f34b817fd3712d0d70bcd
   languageName: node
   linkType: hard
 
