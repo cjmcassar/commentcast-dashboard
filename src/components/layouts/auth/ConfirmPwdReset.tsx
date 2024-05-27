@@ -50,10 +50,7 @@ const ConfirmPwdReset = () => {
     <Card className="mx-auto max-w-sm">
       <CardHeader>
         <CardTitle className="text-xl">Reset Your Password</CardTitle>
-        <CardDescription>
-          Enter the code received by email, your email address, and your new
-          password.
-        </CardDescription>
+        <CardDescription>Enter your new password.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="grid gap-4">
