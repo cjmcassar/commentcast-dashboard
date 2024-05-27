@@ -27,10 +27,15 @@ const ConfirmPwdReset = () => {
   const router = useRouter();
   const { toast } = useToast();
 
+  const searchParams = new URLSearchParams(window.location.search);
+  const searchParamsCode = searchParams.get('code') || '';
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { success, error } = await confirmPasswordReset(newPassword);
+    const response = await confirmPasswordReset(newPassword, searchParamsCode);
+    const success = response?.success;
+    const error = response?.error;
     if (success) {
       toast({
         title: 'Password Reset Success',
@@ -75,7 +80,7 @@ const ConfirmPwdReset = () => {
             />
           </div>
           <Button type="submit" className="w-full">
-            Reset Password
+            Confirm New Password
           </Button>
         </form>
       </CardContent>
