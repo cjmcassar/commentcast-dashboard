@@ -60,11 +60,10 @@ const IssueDetails = ({ slug }: Props) => {
         .from('issue_snapshots')
         .select('*')
         .eq('id', slug)
-        .eq('uuid', user?.id)
+        .or(`uuid.eq.${user?.id},shared_with.cs.{${user?.email}}`)
         .single();
       if (error) {
         console.error('Error fetching issue:', error);
-        // Set default values if there's an error or no data
         setIssue(new Issue());
       } else {
         setIssue(new Issue(data));
