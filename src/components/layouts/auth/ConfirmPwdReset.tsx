@@ -2,7 +2,7 @@
 
 import { confirmPasswordReset } from '@/app/(auth)/confirm-pwd-reset/actions';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -22,13 +22,17 @@ import { useToast } from '@/components/ui/use-toast';
 
 const ConfirmPwdReset = () => {
   const [email, setEmail] = useState('');
-
   const [newPassword, setNewPassword] = useState('');
+  const [searchParamsCode, setSearchParamsCode] = useState('');
+
   const router = useRouter();
   const { toast } = useToast();
 
-  const searchParams = new URLSearchParams(window.location.search);
-  const searchParamsCode = searchParams.get('code') || '';
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get('code') || '';
+    setSearchParamsCode(code);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
