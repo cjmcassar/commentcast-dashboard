@@ -33,6 +33,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Pagination,
   PaginationContent,
@@ -40,6 +42,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
+import { Separator } from '@/components/ui/separator';
 import {
   Table,
   TableBody,
@@ -74,8 +77,10 @@ interface Issue {
 
 const IssueTable = (props: Props) => {
   const [issues, setIssues] = useState<Issue[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
+  const [sharedWithEmail, setSharedWithEmail] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalIssues, setTotalIssues] = useState(0);
   const [issuesPerPage] = useState(5);
@@ -90,13 +95,66 @@ const IssueTable = (props: Props) => {
 
   // Function to handle sharing the issue
   const handleShareClick = (issueId: number) => {
-    const shareableLink = generateShareableLink(issueId);
-    navigator.clipboard.writeText(shareableLink).then(() => {
-      toast({
-        title: `Shareable link copied to clipboard!`,
-        description: 'Share the link with your team.',
+    setSelectedIssueId(issueId);
+    setIsShareDialogOpen(true);
+  };
+
+  const handleShareConfirm = (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent default form submission
+    if (selectedIssueId !== null && sharedWithEmail) {
+      const shareableLink = generateShareableLink(selectedIssueId);
+      navigator.clipboard.writeText(shareableLink).then(() => {
+        toast({
+          title: `User email added to shared with and link copied to clipboard!`,
+          description: 'Share the link with your team.',
+        });
       });
-    });
+      supabase
+        .from('issue_snapshots')
+        .update({ shared_with: [sharedWithEmail] })
+        .eq('id', selectedIssueId)
+        .then((response) => {
+          if (response.error) {
+            console.error(
+              'Error updating issue share details:',
+              response.error
+            );
+          } else {
+            console.log(
+              'Issue share details updated successfully:',
+              response.data
+            );
+          }
+        });
+
+      setIsShareDialogOpen(false);
+    } else {
+      toast({
+        title: 'Invalid Submission',
+        description: 'Please check the email address and try again.',
+      });
+    }
+  };
+
+  const handleQuickShareClick = (issueId: number) => {
+    const shareableLink = generateShareableLink(issueId);
+    navigator.clipboard
+      .writeText(shareableLink)
+      .then(() => {
+        toast({
+          title: 'Shareable link copied to clipboard!',
+          description:
+            'You can now share the link quickly without additional permissions.',
+        });
+        setIsShareDialogOpen(false);
+      })
+      .catch((error) => {
+        console.error('Failed to copy link to clipboard:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to copy link to clipboard. Please try again.',
+        });
+      });
   };
 
   const deleteIssue = async (issueId: number) => {
@@ -118,14 +176,14 @@ const IssueTable = (props: Props) => {
 
   const handleDeleteClick = (issueId: number) => {
     setSelectedIssueId(issueId);
-    setIsDialogOpen(true);
+    setIsDeleteDialogOpen(true);
   };
 
   const confirmDelete = () => {
     if (selectedIssueId !== null) {
       deleteIssue(selectedIssueId);
     }
-    setIsDialogOpen(false);
+    setIsDeleteDialogOpen(false);
   };
 
   useEffect(() => {
@@ -284,7 +342,6 @@ const IssueTable = (props: Props) => {
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleDeleteClick(issue.id);
-                                  // deleteIssue(issue.id);
                                 }}
                               >
                                 <TrashIcon className="w-4 h-4" />
@@ -345,7 +402,7 @@ const IssueTable = (props: Props) => {
         </Tabs>
       </main>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogTrigger asChild>
           <Button className="hidden">Open Dialog</Button>
         </DialogTrigger>
@@ -358,9 +415,57 @@ const IssueTable = (props: Props) => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
             <Button onClick={confirmDelete}>Confirm</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogTrigger asChild>
+          <Button className="hidden">Open Dialog</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Enter the user&apos;s email to share the issue
+            </DialogTitle>
+            <DialogDescription>
+              This will create a shareable link that you can send to the user.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleShareConfirm}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email" className="text-right">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  className="col-span-3"
+                  onChange={(e) => setSharedWithEmail(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter className="flex justify-between">
+              <Button onClick={() => setIsShareDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit">Confirm</Button>
+            </DialogFooter>
+            <div className="flex flex-col ">
+              <Separator className="my-4" />
+              <DialogDescription className="my-4">
+                Alternatively, create a link if you have already added a user.
+              </DialogDescription>
+              <Button
+                onClick={() => handleQuickShareClick(selectedIssueId as number)}
+              >
+                Share Link
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
