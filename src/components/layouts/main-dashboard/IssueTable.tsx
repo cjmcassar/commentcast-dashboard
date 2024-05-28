@@ -43,6 +43,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -73,6 +74,7 @@ interface Issue {
   } | null;
   screenshot: string;
   url: string | null;
+  is_public: boolean;
 }
 
 const IssueTable = (props: Props) => {
@@ -83,20 +85,68 @@ const IssueTable = (props: Props) => {
   const [sharedWithEmail, setSharedWithEmail] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalIssues, setTotalIssues] = useState(0);
+  const [isPublic, setIsPublic] = useState<boolean>();
   const [issuesPerPage] = useState(5);
 
   const supabase = createClient();
   const router = useRouter();
   const { toast } = useToast();
 
+  const handlePublicSwitchChange = async () => {
+    const newIsPublic = !isPublic;
+    setIsPublic(newIsPublic);
+
+    if (selectedIssueId !== null) {
+      const { data, error } = await supabase
+        .from('issue_snapshots')
+        .update({ is_public: newIsPublic })
+        .eq('id', selectedIssueId)
+        .select('is_public')
+        .single();
+
+      if (error) {
+        console.error('Error updating issue:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to update issue visibility. Please try again.',
+        });
+      } else {
+        console.log('Issue visibility updated:', data.is_public);
+        toast({
+          title: 'Success',
+          description: data.is_public
+            ? 'Issue is now public (anyone can view it)'
+            : 'Issue is private. Please add their email before sharing the link',
+        });
+      }
+    }
+  };
+
   const generateShareableLink = (issueId: number) => {
     return `${window.location.origin}/issues/${issueId}`;
   };
 
   // Function to handle sharing the issue
-  const handleShareClick = (issueId: number) => {
+  const handleShareClick = async (issueId: number) => {
     setSelectedIssueId(issueId);
     setIsShareDialogOpen(true);
+
+    // Fetch current public status from Supabase
+    const { data, error } = await supabase
+      .from('issue_snapshots')
+      .select('is_public')
+      .eq('id', issueId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching public status:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch issue details. Please try again.',
+      });
+    } else if (data) {
+      setIsPublic(data.is_public);
+    }
   };
 
   const handleShareConfirm = (event: React.FormEvent) => {
@@ -456,9 +506,19 @@ const IssueTable = (props: Props) => {
             </DialogFooter>
             <div className="flex flex-col ">
               <Separator className="my-4" />
-              <DialogDescription className="my-4">
+              <DialogDescription className="my-2">
                 Alternatively, create a link if you have already added a user.
               </DialogDescription>
+              <div className="flex items-center space-x-2 my-4">
+                <Switch
+                  id="is_public"
+                  checked={isPublic ?? false}
+                  onCheckedChange={handlePublicSwitchChange}
+                />
+                <Label htmlFor="is_public">
+                  Make Issue Public (anyone can view)
+                </Label>
+              </div>
               <Button
                 onClick={() => handleQuickShareClick(selectedIssueId as number)}
               >
