@@ -147,7 +147,7 @@ const IssueDetails = ({ slug }: Props) => {
                           {issue.logs.map((log, index) => (
                             <li
                               key={index}
-                              className="pl-3 list-decimal break-words"
+                              className={`pl-3 list-decimal break-words ${log.level === 'error' ? 'text-red-500' : log.level === 'warning' ? 'text-yellow-500' : 'text-gray-500'}`}
                             >
                               <strong>{log.level}:</strong>{' '}
                               {JSON.stringify(log.text).length > 300
