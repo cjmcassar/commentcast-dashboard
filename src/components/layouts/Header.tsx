@@ -3,6 +3,7 @@
 import { signOut } from '@/app/(auth)/signout/actions';
 import { createClient } from '@/utils/supabase/client';
 import { Home, LineChart, Package2, PanelLeft, Search } from 'lucide-react';
+import { usePostHog } from 'posthog-js/react';
 
 import React, { useEffect, useState } from 'react';
 
@@ -31,25 +32,20 @@ interface UserInfo {
 
 const Header = (props: Props) => {
   const router = useRouter();
-  // const posthog = usePostHog();
+  const posthog = usePostHog();
   const { toast } = useToast();
 
   const supportEmailLink =
     'mailto:christopherjcassar@gmail.com?subject=Bugs%20or%20Feedback&body=Please%20describe%20your%20issue%20or%20feedback%20in%20detail%20here.';
 
   const handleSignOut = async () => {
-    // await signOut();
-
     try {
       await signOut();
       toast({
         title: 'Signed Out',
         description: 'You have been successfully signed out.',
       });
-      // posthog?.capture('sign-out', {
-      //   distinctId: session?.user?.id,
-      //   email: session?.user?.email,
-      // });
+      posthog.capture('sign-out');
       setTimeout(() => {
         router.push('/login');
       }, 1000);
