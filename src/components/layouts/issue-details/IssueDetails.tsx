@@ -55,15 +55,23 @@ const IssueDetails = ({ slug }: Props) => {
 
   useEffect(() => {
     const fetchIssue = async () => {
-      const user = (await supabase.auth.getSession()).data.session?.user;
-      const { data, error } = await supabase
-        .from('issue_snapshots')
-        .select('*')
-        .eq('id', slug)
-        .or(`uuid.eq.${user?.id},shared_with.cs.{${user?.email}}`)
-        .single();
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData?.session?.user;
+      let query = supabase.from('issue_snapshots').select('*').eq('id', slug);
+
+      if (user) {
+        query = query.or(`uuid.eq.${user.id},shared_with.cs.{${user.email}}`);
+      } else {
+        query = query.eq('is_public', true);
+      }
+
+      const { data, error } = await query.maybeSingle();
+
       if (error) {
         console.error('Error fetching issue:', error);
+        setIssue(new Issue());
+      } else if (!data) {
+        console.error('No issue found');
         setIssue(new Issue());
       } else {
         setIssue(new Issue(data));
@@ -96,6 +104,8 @@ const IssueDetails = ({ slug }: Props) => {
         });
       });
   };
+
+  console.log(issue);
 
   return (
     <div>
