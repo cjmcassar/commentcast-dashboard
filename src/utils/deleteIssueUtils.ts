@@ -1,8 +1,6 @@
 import { Issue } from '@/types/issue';
 import { createClient } from '@/utils/supabase/client';
 
-import { useRouter } from 'next/navigation';
-
 const supabase = createClient();
 
 interface ConfirmDeleteProps {
@@ -32,9 +30,7 @@ export const deleteIssue = async (
   // Refresh the issues list after deletion
   setIssues((prevIssues) => {
     if (!Array.isArray(prevIssues)) {
-      if (typeof window !== 'undefined') {
-        router.push('/');
-      }
+      window.location.href = '/';
       return [];
     }
     const filteredIssues = prevIssues.filter((issue) => issue.id !== issueId);
