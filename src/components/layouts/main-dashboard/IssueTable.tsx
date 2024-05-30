@@ -1,5 +1,10 @@
 'use client';
 
+import DeleteDialogue from '@/components/layouts/DeleteDialogue';
+import ShareDialogue from '@/components/layouts/ShareDialogue';
+import { Issue } from '@/types/issue';
+import { handleDeleteClick } from '@/utils/deleteIssueUtils';
+import { handleShareClick } from '@/utils/shareUtils';
 import { createClient } from '@/utils/supabase/client';
 import { MoreHorizontal, Share, TrashIcon } from 'lucide-react';
 
@@ -18,23 +23,11 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Pagination,
   PaginationContent,
@@ -42,8 +35,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -56,26 +47,6 @@ import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 
 type Props = {};
-
-interface Issue {
-  browser_name: string | null;
-  created_at: string;
-  id: number;
-  logs: Array<{
-    level: string;
-    text: string;
-    url?: string;
-  }>;
-  platform_arch: string;
-  platform_os: string;
-  primary_display_dimensions: {
-    primary_display_width: string;
-    primary_display_height: string;
-  } | null;
-  screenshot: string;
-  url: string | null;
-  is_public: boolean;
-}
 
 const IssueTable = (props: Props) => {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -91,150 +62,6 @@ const IssueTable = (props: Props) => {
   const supabase = createClient();
   const router = useRouter();
   const { toast } = useToast();
-
-  const handlePublicSwitchChange = async () => {
-    const newIsPublic = !isPublic;
-    setIsPublic(newIsPublic);
-
-    if (selectedIssueId !== null) {
-      const { data, error } = await supabase
-        .from('issue_snapshots')
-        .update({ is_public: newIsPublic })
-        .eq('id', selectedIssueId)
-        .select('is_public')
-        .single();
-
-      if (error) {
-        console.error('Error updating issue:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to update issue visibility. Please try again.',
-        });
-      } else {
-        console.log('Issue visibility updated:', data.is_public);
-        toast({
-          title: 'Success',
-          description: data.is_public
-            ? 'Issue is now public (anyone can view it)'
-            : 'Issue is private. Please add their email before sharing the link',
-        });
-      }
-    }
-  };
-
-  const generateShareableLink = (issueId: number) => {
-    return `${window.location.origin}/issues/${issueId}`;
-  };
-
-  // Function to handle sharing the issue
-  const handleShareClick = async (issueId: number) => {
-    setSelectedIssueId(issueId);
-    setIsShareDialogOpen(true);
-
-    // Fetch current public status from Supabase
-    const { data, error } = await supabase
-      .from('issue_snapshots')
-      .select('is_public')
-      .eq('id', issueId)
-      .single();
-
-    if (error) {
-      console.error('Error fetching public status:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch issue details. Please try again.',
-      });
-    } else if (data) {
-      setIsPublic(data.is_public);
-    }
-  };
-
-  const handleShareConfirm = (event: React.FormEvent) => {
-    event.preventDefault(); // Prevent default form submission
-    if (selectedIssueId !== null && sharedWithEmail) {
-      const shareableLink = generateShareableLink(selectedIssueId);
-      navigator.clipboard.writeText(shareableLink).then(() => {
-        toast({
-          title: `User email added to shared with and link copied to clipboard!`,
-          description: 'Share the link with your team.',
-        });
-      });
-      supabase
-        .from('issue_snapshots')
-        .update({ shared_with: [sharedWithEmail] })
-        .eq('id', selectedIssueId)
-        .then((response) => {
-          if (response.error) {
-            console.error(
-              'Error updating issue share details:',
-              response.error
-            );
-          } else {
-            console.log(
-              'Issue share details updated successfully:',
-              response.data
-            );
-          }
-        });
-
-      setIsShareDialogOpen(false);
-    } else {
-      toast({
-        title: 'Invalid Submission',
-        description: 'Please check the email address and try again.',
-      });
-    }
-  };
-
-  const handleQuickShareClick = (issueId: number) => {
-    const shareableLink = generateShareableLink(issueId);
-    navigator.clipboard
-      .writeText(shareableLink)
-      .then(() => {
-        toast({
-          title: 'Shareable link copied to clipboard!',
-          description:
-            'You can now share the link quickly without additional permissions.',
-        });
-        setIsShareDialogOpen(false);
-      })
-      .catch((error) => {
-        console.error('Failed to copy link to clipboard:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to copy link to clipboard. Please try again.',
-        });
-      });
-  };
-
-  const deleteIssue = async (issueId: number) => {
-    const { error } = await supabase
-      .from('issue_snapshots')
-      .delete()
-      .eq('id', issueId);
-
-    if (error) {
-      console.error('Error deleting issue:', error);
-      return;
-    }
-
-    // Refresh the issues list after deletion
-    setIssues((prevIssues) =>
-      prevIssues.filter((issue) => issue.id !== issueId)
-    );
-  };
-
-  const handleDeleteClick = (issueId: number) => {
-    setSelectedIssueId(issueId);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (selectedIssueId !== null) {
-      deleteIssue(selectedIssueId);
-    }
-    setIsDeleteDialogOpen(false);
-  };
 
   useEffect(() => {
     const fetchIssues = async () => {
@@ -381,7 +208,13 @@ const IssueTable = (props: Props) => {
                               <DropdownMenuItem
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleShareClick(issue.id);
+                                  handleShareClick(
+                                    issue.id,
+                                    setSelectedIssueId,
+                                    setIsShareDialogOpen,
+                                    setIsPublic,
+                                    toast
+                                  );
                                 }}
                               >
                                 <Share className="w-4 h-4" />
@@ -391,7 +224,11 @@ const IssueTable = (props: Props) => {
                               <DropdownMenuItem
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteClick(issue.id);
+                                  handleDeleteClick(
+                                    issue.id,
+                                    setSelectedIssueId,
+                                    setIsDeleteDialogOpen
+                                  );
                                 }}
                               >
                                 <TrashIcon className="w-4 h-4" />
@@ -452,82 +289,24 @@ const IssueTable = (props: Props) => {
         </Tabs>
       </main>
 
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="hidden">Open Dialog</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Are you absolutely sure?</DialogTitle>
-            <DialogDescription>
-              This action cannot be undone. This will permanently delete the
-              issue.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
-            <Button onClick={confirmDelete}>Confirm</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ShareDialogue
+        isShareDialogOpen={isShareDialogOpen}
+        setIsShareDialogOpen={setIsShareDialogOpen}
+        selectedIssueId={selectedIssueId}
+        sharedWithEmail={sharedWithEmail}
+        setSharedWithEmail={setSharedWithEmail}
+        isPublic={isPublic || false}
+        setIsPublic={setIsPublic || (() => {})}
+      />
 
-      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="hidden">Open Dialog</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              Enter the user&apos;s email to share the issue
-            </DialogTitle>
-            <DialogDescription>
-              This will create a shareable link that you can send to the user.
-            </DialogDescription>
-          </DialogHeader>
-
-          <form onSubmit={handleShareConfirm}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  className="col-span-3"
-                  onChange={(e) => setSharedWithEmail(e.target.value)}
-                />
-              </div>
-            </div>
-            <DialogFooter className="flex justify-between">
-              <Button onClick={() => setIsShareDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Confirm</Button>
-            </DialogFooter>
-            <div className="flex flex-col ">
-              <Separator className="my-4" />
-              <DialogDescription className="my-2">
-                Alternatively, create a link if you have already added a user.
-              </DialogDescription>
-              <div className="flex items-center space-x-2 my-4">
-                <Switch
-                  id="is_public"
-                  checked={isPublic ?? false}
-                  onCheckedChange={handlePublicSwitchChange}
-                />
-                <Label htmlFor="is_public">
-                  Make Issue Public (anyone can view)
-                </Label>
-              </div>
-              <Button
-                onClick={() => handleQuickShareClick(selectedIssueId as number)}
-              >
-                Share Link
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <DeleteDialogue
+        isDeleteDialogOpen={isDeleteDialogOpen}
+        setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+        selectedIssueId={selectedIssueId}
+        setIssues={
+          setIssues as React.Dispatch<React.SetStateAction<Issue | Issue[]>>
+        }
+      />
     </div>
   );
 };
