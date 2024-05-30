@@ -1,12 +1,24 @@
 'use client';
 
+import { Issue as IssueInterface } from '@/types/issue';
+import { handleDeleteClick } from '@/utils/deleteIssueUtils';
+import { handleShareClick } from '@/utils/shareUtils';
 import { createClient } from '@/utils/supabase/client';
+import { MoreHorizontal, Share, TrashIcon } from 'lucide-react';
 
 import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -17,21 +29,22 @@ import {
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
 
+import DeleteDialogue from '../DeleteDialogue';
+import ShareDialogue from '../ShareDialogue';
+
 type Props = {
   slug: string;
 };
 
-class Issue {
+class Issue implements IssueInterface {
   browser_name: string | null = null;
   created_at: string = '';
   id: number = 0;
-  logs:
-    | Array<{
-        level: string;
-        text: string;
-        url?: string;
-      }>
-    | undefined = [];
+  logs: Array<{
+    level: string;
+    text: string;
+    url?: string;
+  }> = [];
   platform_arch: string = '';
   platform_os: string = '';
   primary_display_dimensions: {
@@ -40,6 +53,7 @@ class Issue {
   } | null = null;
   screenshot: string = '/placeholder.svg';
   url: string | null = null;
+  is_public: boolean = false;
 
   constructor(data?: Partial<Issue>) {
     if (data) {
@@ -50,6 +64,18 @@ class Issue {
 
 const IssueDetails = ({ slug }: Props) => {
   const [issue, setIssue] = useState<Issue>(new Issue());
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
+
+  const [isPublic, setIsPublic] = useState<boolean>();
+  const [issuesPerPage] = useState(5);
+
+  const [sharedWithEmail, setSharedWithEmail] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalIssues, setTotalIssues] = useState(0);
+
   const supabase = createClient();
   const { toast } = useToast();
 
@@ -113,6 +139,50 @@ const IssueDetails = ({ slug }: Props) => {
         <CardHeader>
           <CardTitle>Issue Details</CardTitle>
           {/* <CardDescription>The noted issues details below</CardDescription> */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                aria-haspopup="true"
+                variant="ghost"
+                size="icon"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="w-4 h-4" />
+                <span className="sr-only">Open options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleShareClick(
+                    issue.id,
+                    setSelectedIssueId,
+                    setIsShareDialogOpen,
+                    setIsPublic,
+                    toast
+                  );
+                }}
+              >
+                <Share className="w-4 h-4" />
+                <span className="ml-2 ">Share Issue</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick(
+                    issue.id,
+                    setSelectedIssueId,
+                    setIsDeleteDialogOpen
+                  );
+                }}
+              >
+                <TrashIcon className="w-4 h-4" />
+                <span className="ml-2 ">Delete</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </CardHeader>
         <CardContent>
           <div className="grid gap-2">
@@ -249,6 +319,25 @@ const IssueDetails = ({ slug }: Props) => {
           </div>
         </CardContent>
       </Card>
+
+      <ShareDialogue
+        isShareDialogOpen={isShareDialogOpen}
+        setIsShareDialogOpen={setIsShareDialogOpen}
+        selectedIssueId={selectedIssueId}
+        sharedWithEmail={sharedWithEmail}
+        setSharedWithEmail={setSharedWithEmail}
+        isPublic={isPublic || false}
+        setIsPublic={setIsPublic || (() => {})}
+      />
+
+      <DeleteDialogue
+        isDeleteDialogOpen={isDeleteDialogOpen}
+        setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+        selectedIssueId={selectedIssueId}
+        setIssues={
+          setIssue as React.Dispatch<React.SetStateAction<Issue | Issue[]>>
+        }
+      />
     </div>
   );
 };
