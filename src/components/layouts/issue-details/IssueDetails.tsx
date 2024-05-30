@@ -137,52 +137,54 @@ const IssueDetails = ({ slug }: Props) => {
     <div>
       <Card className="overflow-hidden">
         <CardHeader>
-          <CardTitle>Issue Details</CardTitle>
-          {/* <CardDescription>The noted issues details below</CardDescription> */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                aria-haspopup="true"
-                variant="ghost"
-                size="icon"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreHorizontal className="w-4 h-4" />
-                <span className="sr-only">Open options</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleShareClick(
-                    issue.id,
-                    setSelectedIssueId,
-                    setIsShareDialogOpen,
-                    setIsPublic,
-                    toast
-                  );
-                }}
-              >
-                <Share className="w-4 h-4" />
-                <span className="ml-2 ">Share Issue</span>
-              </DropdownMenuItem>
+          <div className="flex justify-between">
+            <CardTitle>Issue Details</CardTitle>
+            {/* <CardDescription>The noted issues details below</CardDescription> */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  aria-haspopup="true"
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                  <span className="sr-only">Open options</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="mr-4">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleShareClick(
+                      issue.id,
+                      setSelectedIssueId,
+                      setIsShareDialogOpen,
+                      setIsPublic,
+                      toast
+                    );
+                  }}
+                >
+                  <Share className="w-4 h-4" />
+                  <span className="ml-2 ">Share Issue</span>
+                </DropdownMenuItem>
 
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteClick(
-                    issue.id,
-                    setSelectedIssueId,
-                    setIsDeleteDialogOpen
-                  );
-                }}
-              >
-                <TrashIcon className="w-4 h-4" />
-                <span className="ml-2 ">Delete</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteClick(
+                      issue.id,
+                      setSelectedIssueId,
+                      setIsDeleteDialogOpen
+                    );
+                  }}
+                >
+                  <TrashIcon className="w-4 h-4" />
+                  <span className="ml-2 ">Delete</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid gap-2">
@@ -192,7 +194,7 @@ const IssueDetails = ({ slug }: Props) => {
                 className="aspect-square rounded-md object-contain"
                 height={245}
                 width={640}
-                src={issue.screenshot}
+                src={issue.screenshot || '/placeholder.svg'}
               />
               <Table>
                 <TableHeader>
