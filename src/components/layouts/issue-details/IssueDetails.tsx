@@ -199,7 +199,7 @@ const IssueDetails = ({ slug }: Props) => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-2">
+          <div>
             <div className="grid grid-cols-2 gap-2">
               <div
                 className="w-full h-full cursor-pointer"
@@ -215,13 +215,13 @@ const IssueDetails = ({ slug }: Props) => {
                 </AspectRatio>
               </div>
 
-              <Table>
+              <Table className="w-3/4">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Browser Details </TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="">
                   <TableRow>
                     <TableCell
                       className="font-medium w-[100px] max-w-[100px] cursor-pointer"
