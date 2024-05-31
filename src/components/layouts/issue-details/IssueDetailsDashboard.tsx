@@ -14,7 +14,7 @@ export default function IssueDetailsDashboard({ slug }: Props) {
       <SideNavBar />
 
       <Header />
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+      <div className="flex items-center flex-col sm:gap-4 sm:py-4 sm:pl-14">
         <IssueDetails slug={slug} />
       </div>
     </div>

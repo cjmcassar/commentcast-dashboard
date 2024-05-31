@@ -10,13 +10,19 @@ import React, { useEffect, useState } from 'react';
 
 import Image from 'next/image';
 
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -30,6 +36,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 
 import DeleteDialogue from '../DeleteDialogue';
+import ImageDialogue from '../ImageDialogue';
 import ShareDialogue from '../ShareDialogue';
 
 type Props = {
@@ -51,7 +58,7 @@ class Issue implements IssueInterface {
     primary_display_width: string;
     primary_display_height: string;
   } | null = null;
-  screenshot: string = '/placeholder.svg';
+  screenshot: string = '';
   url: string | null = null;
   is_public: boolean = false;
 
@@ -64,17 +71,14 @@ class Issue implements IssueInterface {
 
 const IssueDetails = ({ slug }: Props) => {
   const [issue, setIssue] = useState<Issue>(new Issue());
-
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState<boolean>();
-  const [issuesPerPage] = useState(5);
 
   const [sharedWithEmail, setSharedWithEmail] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalIssues, setTotalIssues] = useState(0);
 
   const supabase = createClient();
   const { toast } = useToast();
@@ -131,78 +135,93 @@ const IssueDetails = ({ slug }: Props) => {
       });
   };
 
-  console.log(issue);
+  const handleImageClick = () => {
+    setIsImageDialogOpen(true);
+  };
 
   return (
     <div>
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden ">
         <CardHeader>
           <div className="flex justify-between">
-            <CardTitle>Issue Details</CardTitle>
-            {/* <CardDescription>The noted issues details below</CardDescription> */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  aria-haspopup="true"
-                  variant="ghost"
-                  size="icon"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreHorizontal className="w-4 h-4" />
-                  <span className="sr-only">Open options</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="mr-4">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleShareClick(
-                      issue.id,
-                      setSelectedIssueId,
-                      setIsShareDialogOpen,
-                      setIsPublic,
-                      toast
-                    );
-                  }}
-                >
-                  <Share className="w-4 h-4" />
-                  <span className="ml-2 ">Share Issue</span>
-                </DropdownMenuItem>
+            <div className="space-y-2">
+              <CardTitle>Issue Details</CardTitle>
+              <CardDescription>
+                Below are the detailed notes of the reported issues
+              </CardDescription>
+            </div>
+            <div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    aria-haspopup="true"
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreHorizontal className="w-4 h-4" />
+                    <span className="sr-only">Open options</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="mr-4">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleShareClick(
+                        issue.id,
+                        setSelectedIssueId,
+                        setIsShareDialogOpen,
+                        setIsPublic,
+                        toast
+                      );
+                    }}
+                  >
+                    <Share className="w-4 h-4" />
+                    <span className="ml-2 ">Share Issue</span>
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteClick(
-                      issue.id,
-                      setSelectedIssueId,
-                      setIsDeleteDialogOpen
-                    );
-                  }}
-                >
-                  <TrashIcon className="w-4 h-4" />
-                  <span className="ml-2 ">Delete</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(
+                        issue.id,
+                        setSelectedIssueId,
+                        setIsDeleteDialogOpen
+                      );
+                    }}
+                  >
+                    <TrashIcon className="w-4 h-4" />
+                    <span className="ml-2 ">Delete</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-2">
+          <div>
             <div className="grid grid-cols-2 gap-2">
-              <Image
-                alt="Product image"
-                className="aspect-square rounded-md object-contain"
-                height={245}
-                width={640}
-                src={issue.screenshot || '/placeholder.svg'}
-              />
-              <Table>
+              <div
+                className="w-full h-full cursor-pointer"
+                onClick={handleImageClick}
+              >
+                <AspectRatio ratio={16 / 9} className="bg-muted">
+                  <Image
+                    alt="Product image"
+                    className="aspect-square rounded-md object-contain"
+                    fill={true}
+                    src={issue.screenshot}
+                  />
+                </AspectRatio>
+              </div>
+
+              <Table className="w-3/4">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Browser Details </TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="">
                   <TableRow>
                     <TableCell
                       className="font-medium w-[100px] max-w-[100px] cursor-pointer"
@@ -339,6 +358,12 @@ const IssueDetails = ({ slug }: Props) => {
         setIssues={
           setIssue as React.Dispatch<React.SetStateAction<Issue | Issue[]>>
         }
+      />
+
+      <ImageDialogue
+        isImageDialogOpen={isImageDialogOpen}
+        setIsImageDialogOpen={setIsImageDialogOpen}
+        screenshot={issue.screenshot}
       />
     </div>
   );
