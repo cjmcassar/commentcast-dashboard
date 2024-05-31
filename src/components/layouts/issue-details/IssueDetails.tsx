@@ -25,6 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -141,7 +142,7 @@ const IssueDetails = ({ slug }: Props) => {
 
   return (
     <div>
-      <Card className="overflow-hidden ">
+      <Card className="overflow-hidden min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[1000px]">
         <CardHeader>
           <div className="flex justify-between">
             <div className="space-y-2">
@@ -201,11 +202,12 @@ const IssueDetails = ({ slug }: Props) => {
         <CardContent>
           <div>
             <div className="grid grid-cols-2 gap-2">
-              <div
-                className="w-full h-full cursor-pointer"
-                onClick={handleImageClick}
-              >
-                <AspectRatio ratio={16 / 9} className="bg-muted">
+              <div className="w-full h-full">
+                <AspectRatio
+                  ratio={16 / 9}
+                  className="bg-muted cursor-pointer"
+                  onClick={handleImageClick}
+                >
                   <Image
                     alt="Product image"
                     className="aspect-square rounded-md object-contain"
@@ -215,7 +217,7 @@ const IssueDetails = ({ slug }: Props) => {
                 </AspectRatio>
               </div>
 
-              <Table className="w-3/4">
+              <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Browser Details </TableHead>
@@ -223,35 +225,35 @@ const IssueDetails = ({ slug }: Props) => {
                 </TableHeader>
                 <TableBody className="">
                   <TableRow>
-                    <TableCell
-                      className="font-medium w-[100px] max-w-[100px] cursor-pointer"
-                      onClick={() =>
-                        handleCopyToClipboard(
-                          JSON.stringify(issue.logs),
-                          'Logs'
-                        )
-                      }
-                    >
-                      <strong>Logs:</strong>
-                      {issue.logs && issue.logs.length > 0 ? (
-                        <ul className="space-y-1 pl-4">
-                          {issue.logs.map((log, index) => (
-                            <li
-                              key={index}
-                              className={`pl-3 list-decimal break-words ${log.level === 'error' ? 'text-red-500' : log.level === 'warning' ? 'text-yellow-500' : 'text-gray-500'}`}
-                            >
-                              <strong>{log.level}:</strong>{' '}
-                              {JSON.stringify(log.text).length > 300
-                                ? `${JSON.stringify(log.text).substring(0, 297)}...`
-                                : JSON.stringify(log.text)}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <span className="pl-3 text-pretty">
-                          No logs detected.
-                        </span>
-                      )}
+                    <TableCell className="font-medium w-[100px] max-w-[100px] ">
+                      <ScrollArea className="h-72 rounded-md">
+                        <strong>Logs:</strong>
+                        {issue.logs && issue.logs.length > 0 ? (
+                          <ul className="space-y-1 pl-4">
+                            {issue.logs.map((log, index) => (
+                              <li
+                                key={index}
+                                className={`pl-3 list-decimal break-words ${log.level === 'error' ? 'text-red-500' : log.level === 'warning' ? 'text-yellow-500' : 'text-gray-500'} cursor-pointer hover:bg-gray-300`}
+                                onClick={() =>
+                                  handleCopyToClipboard(
+                                    JSON.stringify(log),
+                                    `Log ${log.level}`
+                                  )
+                                }
+                              >
+                                <strong>{log.level}:</strong>{' '}
+                                {JSON.stringify(log.text).length > 300
+                                  ? `${JSON.stringify(log.text).substring(0, 297)}...`
+                                  : JSON.stringify(log.text)}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <span className="pl-3 text-pretty">
+                            No logs detected.
+                          </span>
+                        )}
+                      </ScrollArea>
                     </TableCell>
                   </TableRow>
                   <TableRow>
