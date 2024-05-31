@@ -142,7 +142,7 @@ const IssueDetails = ({ slug }: Props) => {
 
   return (
     <div>
-      <Card className="overflow-hidden ">
+      <Card className="overflow-hidden min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[1000px]">
         <CardHeader>
           <div className="flex justify-between">
             <div className="space-y-2">
@@ -202,7 +202,7 @@ const IssueDetails = ({ slug }: Props) => {
         <CardContent>
           <div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="w-full h-full ">
+              <div className="w-full h-full">
                 <AspectRatio
                   ratio={16 / 9}
                   className="bg-muted cursor-pointer"
@@ -217,7 +217,7 @@ const IssueDetails = ({ slug }: Props) => {
                 </AspectRatio>
               </div>
 
-              <Table className="w-3/4">
+              <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Browser Details </TableHead>
