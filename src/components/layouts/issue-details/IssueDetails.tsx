@@ -61,7 +61,8 @@ class Issue implements IssueInterface {
   screenshot: string = '';
   url: string | null = null;
   is_public: boolean = false;
-
+  browser_console_data: string = '';
+  browser_network_data: string = '';
   constructor(data?: Partial<Issue>) {
     if (data) {
       Object.assign(this, data);

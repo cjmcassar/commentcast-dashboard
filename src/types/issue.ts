@@ -16,4 +16,6 @@ export interface Issue {
   screenshot: string;
   url: string | null;
   is_public: boolean;
+  browser_console_data: string;
+  browser_network_data: string;
 }
