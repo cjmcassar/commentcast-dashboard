@@ -220,6 +220,9 @@ const IssueDetails = ({ slug }: Props) => {
           <div>
             <div className="grid grid-cols-2 gap-2">
               <div className="w-full h-full">
+                <h1 className="mt-2 mb-4 text-sm font-medium text-muted-foreground">
+                  Screenshot
+                </h1>
                 <AspectRatio
                   ratio={16 / 9}
                   className="bg-muted cursor-pointer rounded"
