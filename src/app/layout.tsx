@@ -1,4 +1,5 @@
 import { PHProvider } from '@/components/config/PostHogProvider';
+import { ThemeProvider } from '@/components/config/ThemeProvider';
 import type { Metadata } from 'next';
 
 import dynamic from 'next/dynamic';
@@ -28,12 +29,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <PHProvider>
-          <PostHogPageView />
-          <main>{children}</main> <Toaster />
-        </PHProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <PHProvider>
+            <PostHogPageView />
+            <main>{children}</main> <Toaster />
+          </PHProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
