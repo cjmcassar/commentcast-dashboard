@@ -1,6 +1,6 @@
 'use client';
 
-import { Issue as IssueInterface } from '@/types/issue';
+import { Issue } from '@/types/issue';
 import { handleDeleteClick } from '@/utils/deleteIssueUtils';
 import { handleShareClick } from '@/utils/shareUtils';
 import { createClient } from '@/utils/supabase/client';
@@ -19,6 +19,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,33 +49,6 @@ import ShareDialogue from '../ShareDialogue';
 type Props = {
   slug: string;
 };
-
-class Issue implements IssueInterface {
-  browser_name: string | null = null;
-  created_at: string = '';
-  id: number = 0;
-  logs: Array<{
-    level: string;
-    text: string;
-    url?: string;
-  }> = [];
-  platform_arch: string = '';
-  platform_os: string = '';
-  primary_display_dimensions: {
-    primary_display_width: string;
-    primary_display_height: string;
-  } | null = null;
-  screenshot: string = '/LargeLogo.png';
-  url: string | null = null;
-  is_public: boolean = false;
-  browser_console_data: string = '';
-  browser_network_data: string = '';
-  constructor(data?: Partial<Issue>) {
-    if (data) {
-      Object.assign(this, data);
-    }
-  }
-}
 
 const IssueDetails = ({ slug }: Props) => {
   const [issue, setIssue] = useState<Issue>(new Issue());
@@ -170,7 +149,11 @@ const IssueDetails = ({ slug }: Props) => {
     setIsImageDialogOpen(true);
   };
 
-  console.log('ownsIssue', ownsIssue);
+  const handleSearchWithGoogle = (logText: string) => {
+    const query = encodeURIComponent(logText);
+    const url = `https://www.google.com/search?q=${query}`;
+    window.open(url, '_blank');
+  };
 
   return (
     <div>
@@ -265,21 +248,41 @@ const IssueDetails = ({ slug }: Props) => {
                         {issue.logs && issue.logs.length > 0 ? (
                           <ul className="space-y-1 pl-4">
                             {issue.logs.map((log, index) => (
-                              <li
-                                key={index}
-                                className={`pl-3 list-decimal break-words ${log.level === 'error' ? 'text-red-500' : log.level === 'warning' ? 'text-yellow-500' : 'text-gray-500'} cursor-pointer hover:bg-gray-300`}
-                                onClick={() =>
-                                  handleCopyToClipboard(
-                                    JSON.stringify(log),
-                                    `Log ${log.level}`
-                                  )
-                                }
-                              >
-                                <strong>{log.level}:</strong>{' '}
-                                {JSON.stringify(log.text).length > 300
-                                  ? `${JSON.stringify(log.text).substring(0, 297)}...`
-                                  : JSON.stringify(log.text)}
-                              </li>
+                              <ContextMenu key={index}>
+                                <ContextMenuTrigger asChild>
+                                  <li
+                                    className={`pl-3 list-decimal break-words ${log.level === 'error' ? 'text-red-500' : log.level === 'warning' ? 'text-yellow-500' : 'text-gray-500'} cursor-pointer hover:bg-gray-300`}
+                                    onClick={() =>
+                                      handleCopyToClipboard(
+                                        JSON.stringify(log),
+                                        `Log ${log.level}`
+                                      )
+                                    }
+                                  >
+                                    <strong>{log.level}:</strong>{' '}
+                                    {JSON.stringify(log.text).length > 300
+                                      ? `${JSON.stringify(log.text).substring(0, 297)}...`
+                                      : JSON.stringify(log.text)}
+                                  </li>
+                                </ContextMenuTrigger>
+                                <ContextMenuContent>
+                                  <ContextMenuItem
+                                    onClick={() => {
+                                      handleSearchWithGoogle(log.text);
+                                    }}
+                                  >
+                                    <a className="mr-2">
+                                      <Image
+                                        src="https://cdn3.emoji.gg/emojis/8515-google.png"
+                                        width={16}
+                                        height={16}
+                                        alt="Google"
+                                      />
+                                    </a>{' '}
+                                    Search With Google
+                                  </ContextMenuItem>
+                                </ContextMenuContent>
+                              </ContextMenu>
                             ))}
                           </ul>
                         ) : (

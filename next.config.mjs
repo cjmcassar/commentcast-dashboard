@@ -12,6 +12,9 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    domains: ['cdn3.emoji.gg'],
+  },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
 };
