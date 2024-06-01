@@ -59,7 +59,7 @@ class Issue implements IssueInterface {
     primary_display_width: string;
     primary_display_height: string;
   } | null = null;
-  screenshot: string = '';
+  screenshot: string = '/LargeLogo.png';
   url: string | null = null;
   is_public: boolean = false;
   browser_console_data: string = '';
@@ -77,7 +77,7 @@ const IssueDetails = ({ slug }: Props) => {
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
-
+  const [ownsIssue, setOwnsIssue] = useState(false);
   const [isPublic, setIsPublic] = useState<boolean>();
 
   const [sharedWithEmail, setSharedWithEmail] = useState('');
@@ -114,6 +114,34 @@ const IssueDetails = ({ slug }: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
+  useEffect(() => {
+    const checkIssueOwnership = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('issue_snapshots')
+        .select('uuid')
+        .eq('id', slug)
+        .single();
+
+      if (error) {
+        return;
+      }
+
+      console.log('data', data);
+
+      console.log('user', user);
+
+      setOwnsIssue(data.uuid === user.id);
+    };
+
+    checkIssueOwnership();
+  }, [slug]);
+
   const handleCopyToClipboard = (text: string, label: string) => {
     let helperText = (
       <>
@@ -140,6 +168,8 @@ const IssueDetails = ({ slug }: Props) => {
   const handleImageClick = () => {
     setIsImageDialogOpen(true);
   };
+
+  console.log('ownsIssue', ownsIssue);
 
   return (
     <div>
@@ -182,19 +212,21 @@ const IssueDetails = ({ slug }: Props) => {
                     <span className="ml-2 ">Share Issue</span>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteClick(
-                        issue.id,
-                        setSelectedIssueId,
-                        setIsDeleteDialogOpen
-                      );
-                    }}
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                    <span className="ml-2 ">Delete</span>
-                  </DropdownMenuItem>
+                  {ownsIssue && (
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteClick(
+                          issue.id,
+                          setSelectedIssueId,
+                          setIsDeleteDialogOpen
+                        );
+                      }}
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                      <span className="ml-2 ">Delete</span>
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -206,12 +238,12 @@ const IssueDetails = ({ slug }: Props) => {
               <div className="w-full h-full">
                 <AspectRatio
                   ratio={16 / 9}
-                  className="bg-muted cursor-pointer"
+                  className="bg-muted cursor-pointer rounded"
                   onClick={handleImageClick}
                 >
                   <Image
                     alt="Product image"
-                    className="aspect-square rounded-md object-contain"
+                    className="aspect-square object-contain rounded"
                     fill={true}
                     src={issue.screenshot}
                   />
