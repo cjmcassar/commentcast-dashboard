@@ -140,6 +140,7 @@ const IssueDetails = ({ slug }: Props) => {
     };
 
     checkIssueOwnership();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   const handleCopyToClipboard = (text: string, label: string) => {
