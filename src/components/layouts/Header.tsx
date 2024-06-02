@@ -32,9 +32,12 @@ interface UserInfo {
 }
 
 const Header = (props: Props) => {
+  const [userInfo, setUserInfo] = useState<UserInfo | null>();
   const router = useRouter();
+
   const posthog = usePostHog();
   const { toast } = useToast();
+  const supabase = createClient();
 
   const supportEmailLink =
     'mailto:christopherjcassar@gmail.com?subject=Bugs%20or%20Feedback&body=Please%20describe%20your%20issue%20or%20feedback%20in%20detail%20here.';
@@ -54,9 +57,6 @@ const Header = (props: Props) => {
       console.error('Client-side sign out error:', error);
     }
   };
-
-  const supabase = createClient();
-  const [userInfo, setUserInfo] = useState<UserInfo | null>();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -127,14 +127,14 @@ const Header = (props: Props) => {
         <div className="relative ml-auto flex-1 md:grow-0 flex items-center gap-2">
           <DarkModeButton />
 
-          <div className="relative flex-1">
+          {/* <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Filter Issues..."
               className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
             />
-          </div>
+          </div> */}
         </div>
 
         <DropdownMenu>
