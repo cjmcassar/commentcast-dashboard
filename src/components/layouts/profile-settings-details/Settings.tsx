@@ -1,6 +1,12 @@
 'use client';
 
+import DeleteDialogue from '@/components/layouts/DeleteDialogue';
+import ShareDialogue from '@/components/layouts/ShareDialogue';
+import { Issue } from '@/types/issue';
+import { handleDeleteClick } from '@/utils/deleteIssueUtils';
+import { handleShareClick } from '@/utils/shareUtils';
 import { createClient } from '@/utils/supabase/client';
+import { MoreHorizontal, Share, TrashIcon } from 'lucide-react';
 
 import { useEffect, useState } from 'react';
 
@@ -15,9 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -25,20 +35,29 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { useToast } from '@/components/ui/use-toast';
 
-//todo: add a table that shows all of the issues that are currently public and being shared
 //todo: Allow user to revoke access to issues that they have shared by deleting emails from the table
 
 export function SettingsDetails() {
+  const [user, setUser] = useState<any | null>(null);
   const [combinedPublicAndSharedIssues, setCombinedPublicAndSharedIssues] =
     useState<any[] | null>(null);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
+  const [sharedWithEmail, setSharedWithEmail] = useState('');
+  const [isPublic, setIsPublic] = useState<boolean>();
 
   const supabase = createClient();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchSharedIssues = async () => {
       const { data: userData } = await supabase.auth.getUser();
       const user = userData?.user;
+      setUser(user);
 
       const publicQuery = supabase.from('issue_snapshots').select('*');
       const sharedQuery = supabase.from('issue_snapshots').select('*');
@@ -100,12 +119,9 @@ export function SettingsDetails() {
               </CardHeader>
               <CardContent>
                 <form>
-                  <Input placeholder="Email" />
+                  <Input placeholder={`${user?.email}`} disabled />
                 </form>
               </CardContent>
-              <CardFooter className="border-t px-6 py-4">
-                <Button>Save</Button>
-              </CardFooter>
             </Card>
             <Card x-chunk="dashboard-04-chunk-2">
               <CardHeader>
@@ -149,10 +165,50 @@ export function SettingsDetails() {
                           </Link>
                         </TableCell>
                         <TableCell>
-                          <Checkbox checked={issue.is_public} />
-                          <Label className="text-sm ml-2" htmlFor="include">
-                            is public
-                          </Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                aria-haspopup="true"
+                                variant="ghost"
+                                size="icon"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MoreHorizontal className="w-4 h-4" />
+                                <span className="sr-only">Open options</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleShareClick(
+                                    issue.id,
+                                    setSelectedIssueId,
+                                    setIsShareDialogOpen,
+                                    setIsPublic,
+                                    toast
+                                  );
+                                }}
+                              >
+                                <Share className="w-4 h-4" />
+                                <span className="ml-2 ">Share Issue</span>
+                              </DropdownMenuItem>
+
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteClick(
+                                    issue.id,
+                                    setSelectedIssueId,
+                                    setIsDeleteDialogOpen
+                                  );
+                                }}
+                              >
+                                <TrashIcon className="w-4 h-4" />
+                                <span className="ml-2 ">Delete</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -166,6 +222,25 @@ export function SettingsDetails() {
           </div>
         </div>
       </main>
+
+      <ShareDialogue
+        isShareDialogOpen={isShareDialogOpen}
+        setIsShareDialogOpen={setIsShareDialogOpen}
+        selectedIssueId={selectedIssueId}
+        sharedWithEmail={sharedWithEmail}
+        setSharedWithEmail={setSharedWithEmail}
+        isPublic={isPublic || false}
+        setIsPublic={setIsPublic || (() => {})}
+      />
+
+      <DeleteDialogue
+        isDeleteDialogOpen={isDeleteDialogOpen}
+        setIsDeleteDialogOpen={setIsDeleteDialogOpen}
+        selectedIssueId={selectedIssueId}
+        setIssues={
+          setIssues as React.Dispatch<React.SetStateAction<Issue | Issue[]>>
+        }
+      />
     </div>
   );
 }
