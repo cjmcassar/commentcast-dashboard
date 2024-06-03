@@ -106,20 +106,22 @@ const Header = (props: Props) => {
                 <span className="sr-only">CommentCast</span>
               </Link>
               <Link
-                href="#"
+                href="/"
                 className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
               >
                 <Home className="h-5 w-5" />
                 Dashboard
               </Link>
 
-              <Link
-                href="#"
-                className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              >
-                <LineChart className="h-5 w-5" />
-                Settings
-              </Link>
+              {userInfo && (
+                <Link
+                  href="/profile-settings"
+                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                >
+                  <LineChart className="h-5 w-5" />
+                  Settings
+                </Link>
+              )}
             </nav>
           </SheetContent>
         </Sheet>
@@ -151,6 +153,11 @@ const Header = (props: Props) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {userInfo && (
+              <DropdownMenuItem>
+                <Link href="/profile-settings">Profile Settings</Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem>
               <a href={supportEmailLink} target="_blank" rel="noreferrer">
                 Support
