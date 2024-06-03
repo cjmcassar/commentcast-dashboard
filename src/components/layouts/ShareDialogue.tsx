@@ -3,7 +3,6 @@
 import { handlePublicSwitchChange } from '@/utils/publicSwitchChangeUtils';
 import { handleQuickShareClick, handleShareConfirm } from '@/utils/shareUtils';
 import { createClient } from '@/utils/supabase/client';
-import { User } from '@supabase/supabase-js';
 
 import React, { useEffect, useState } from 'react';
 
