@@ -29,15 +29,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { ToastProps } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
-
-//todo: Allow user to revoke access to issues that they have shared by deleting emails from the table
 
 export function SettingsDetails() {
   const [user, setUser] = useState<any | null>(null);
@@ -49,6 +53,7 @@ export function SettingsDetails() {
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
   const [sharedWithEmail, setSharedWithEmail] = useState('');
   const [isPublic, setIsPublic] = useState<boolean>();
+  const [updatedEmail, setUpdatedEmail] = useState('');
 
   const supabase = createClient();
   const { toast } = useToast();
@@ -87,10 +92,102 @@ export function SettingsDetails() {
       setCombinedPublicAndSharedIssues(uniqueIssues);
     };
 
+    console.log('useEffect  fetchSharedIssues');
     fetchSharedIssues();
-  }, []);
+  }, [supabase]);
 
-  console.log('combinedPublicAndSharedIssues', combinedPublicAndSharedIssues);
+  const handleUpdateEmail = async (updatedEmail: string, issueId: number) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(updatedEmail)) {
+      toast({
+        title: 'Invalid Submission',
+        description: 'Please check the email address and try again.',
+      } as ToastProps);
+      return;
+    }
+
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+
+    const { data: currentIssueData } = await supabase
+      .from('issue_snapshots')
+      .select('shared_with')
+      .eq('id', issueId)
+      .single();
+
+    const existingEmails = currentIssueData?.shared_with || [];
+    const updatedEmails = Array.from(
+      new Set([...existingEmails, updatedEmail])
+    );
+
+    const { error } = await supabase
+      .from('issue_snapshots')
+      .update({ shared_with: updatedEmails })
+      .eq('uuid', user?.id)
+      .eq('id', issueId);
+
+    if (error) {
+      console.error('Error updating issue:', error);
+      toast({
+        title: 'Failed to update shared emails',
+      } as ToastProps);
+    } else {
+      toast({
+        title: 'Email updated successfully',
+      } as ToastProps);
+      setCombinedPublicAndSharedIssues((prevIssues) =>
+        prevIssues
+          ? prevIssues.map((issue) =>
+              issue.id === issueId
+                ? { ...issue, shared_with: updatedEmails }
+                : issue
+            )
+          : []
+      );
+    }
+  };
+
+  const handleRemoveEmail = async (email: string, issueId: number) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const user = userData?.user;
+
+    const { data: currentIssueData } = await supabase
+      .from('issue_snapshots')
+      .select('shared_with')
+      .eq('uuid', user?.id)
+      .eq('id', issueId)
+      .single();
+
+    const updatedEmails = currentIssueData?.shared_with?.filter(
+      (e: string) => e !== email
+    );
+
+    const { error } = await supabase
+      .from('issue_snapshots')
+      .update({ shared_with: updatedEmails })
+      .eq('uuid', user?.id)
+      .eq('id', issueId);
+
+    if (error) {
+      console.error('Error updating issue:', error);
+      toast({
+        title: 'Failed to update shared emails',
+      } as ToastProps);
+    } else {
+      toast({
+        title: 'Email removed successfully',
+      } as ToastProps);
+      setCombinedPublicAndSharedIssues((prevIssues) =>
+        prevIssues
+          ? prevIssues.map((issue) =>
+              issue.id === issueId
+                ? { ...issue, shared_with: updatedEmails }
+                : issue
+            )
+          : []
+      );
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -106,11 +203,6 @@ export function SettingsDetails() {
             <Link href="#" className="font-semibold text-primary">
               General
             </Link>
-            <Link href="#">Security</Link>
-            <Link href="#">Integrations</Link>
-            <Link href="#">Support</Link>
-            <Link href="#">Organizations</Link>
-            <Link href="#">Advanced</Link>
           </nav>
           <div className="grid gap-6">
             <Card x-chunk="dashboard-04-chunk-1">
@@ -146,11 +238,69 @@ export function SettingsDetails() {
                       <TableRow key={issue.id}>
                         <TableCell>{issue.id}</TableCell>
                         <TableCell>
-                          {issue.shared_with
-                            ? issue.shared_with
-                            : issue.is_public
-                              ? 'Public'
-                              : ''}
+                          <Popover key={issue.id}>
+                            <PopoverTrigger
+                              asChild
+                              onClick={() => setUpdatedEmail(issue.shared_with)}
+                            >
+                              <a
+                                aria-haspopup="true"
+                                className="cursor-pointer"
+                              >
+                                {issue.shared_with ? (
+                                  issue.shared_with.map((email: string) => (
+                                    <span key={email}>{email}, </span>
+                                  ))
+                                ) : issue.is_public ? (
+                                  <span>Public, </span>
+                                ) : (
+                                  <span>, </span>
+                                )}
+                              </a>
+                            </PopoverTrigger>
+
+                            <PopoverContent className="w-full">
+                              <Input
+                                name="emailInput"
+                                type="email"
+                                placeholder="Add email"
+                                onChange={(e) => {
+                                  setUpdatedEmail(e.target.value);
+                                }}
+                                onBlur={(e) => {
+                                  const target = e.target as HTMLInputElement;
+                                  if (target.value) {
+                                    handleUpdateEmail(updatedEmail, issue.id);
+                                  }
+                                }}
+                              />
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableCell>Email</TableCell>
+                                  </TableRow>
+                                </TableHeader>
+
+                                <TableBody>
+                                  {issue.shared_with?.map((email: string) => (
+                                    <TableRow key={email}>
+                                      <TableCell>{email}</TableCell>
+                                      <TableCell>
+                                        <Button
+                                          variant="destructive"
+                                          onClick={() => {
+                                            handleRemoveEmail(email, issue.id);
+                                          }}
+                                        >
+                                          Remove
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </PopoverContent>
+                          </Popover>
                         </TableCell>
                         <TableCell>
                           <Link
@@ -215,9 +365,7 @@ export function SettingsDetails() {
                   </TableBody>
                 </Table>
               </CardContent>
-              <CardFooter className="border-t px-6 py-4">
-                <Button>Save</Button>
-              </CardFooter>
+              <CardFooter className="border-t px-6 py-4"></CardFooter>
             </Card>
           </div>
         </div>
