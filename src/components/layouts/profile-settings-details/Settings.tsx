@@ -247,14 +247,13 @@ export function SettingsDetails() {
                                 aria-haspopup="true"
                                 className="cursor-pointer"
                               >
-                                {issue.shared_with ? (
+                                {issue.shared_with &&
+                                issue.shared_with.length > 0 ? (
                                   issue.shared_with.map((email: string) => (
                                     <span key={email}>{email}, </span>
                                   ))
-                                ) : issue.is_public ? (
-                                  <span>Public, </span>
                                 ) : (
-                                  <span>, </span>
+                                  <span>Public</span>
                                 )}
                               </a>
                             </PopoverTrigger>
