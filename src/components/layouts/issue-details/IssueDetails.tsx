@@ -1,5 +1,9 @@
 'use client';
 
+import DeleteDialogue from '@/components/layouts/DeleteDialogue';
+import ImageDialogue from '@/components/layouts/ImageDialogue';
+import ShareDialogue from '@/components/layouts/ShareDialogue';
+import ConsoleAndNetworkTable from '@/components/layouts/issue-details/ConsoleAndNetworkTable';
 import { Issue } from '@/types/issue';
 import { handleDeleteClick } from '@/utils/deleteIssueUtils';
 import { handleShareClick } from '@/utils/shareUtils';
@@ -20,18 +24,11 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -41,10 +38,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
-
-import DeleteDialogue from '../DeleteDialogue';
-import ImageDialogue from '../ImageDialogue';
-import ShareDialogue from '../ShareDialogue';
 
 type Props = {
   slug: string;
@@ -149,12 +142,6 @@ const IssueDetails = ({ slug }: Props) => {
     setIsImageDialogOpen(true);
   };
 
-  const handleSearchWithGoogle = (logText: string) => {
-    const query = encodeURIComponent(logText);
-    const url = `https://www.google.com/search?q=${query}`;
-    window.open(url, '_blank');
-  };
-
   return (
     <div>
       <Card className="overflow-hidden min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[1000px]">
@@ -245,58 +232,6 @@ const IssueDetails = ({ slug }: Props) => {
                 </TableHeader>
                 <TableBody className="">
                   <TableRow>
-                    <TableCell className="font-medium w-[100px] max-w-[100px] ">
-                      <ScrollArea className="h-72 rounded-md">
-                        <strong>Logs:</strong>
-                        {issue.logs && issue.logs.length > 0 ? (
-                          <ul className="space-y-1 pl-4">
-                            {issue.logs.map((log, index) => (
-                              <ContextMenu key={index}>
-                                <ContextMenuTrigger asChild>
-                                  <li
-                                    className={`pl-3 list-decimal break-words ${log.level === 'error' ? 'text-red-500' : log.level === 'warning' ? 'text-yellow-500' : 'text-gray-500'} cursor-pointer hover:bg-gray-300`}
-                                    onClick={() =>
-                                      handleCopyToClipboard(
-                                        JSON.stringify(log),
-                                        `Log ${log.level}`
-                                      )
-                                    }
-                                  >
-                                    <strong>{log.level}:</strong>{' '}
-                                    {JSON.stringify(log.text).length > 300
-                                      ? `${JSON.stringify(log.text).substring(0, 297)}...`
-                                      : JSON.stringify(log.text)}
-                                  </li>
-                                </ContextMenuTrigger>
-                                <ContextMenuContent>
-                                  <ContextMenuItem
-                                    onClick={() => {
-                                      handleSearchWithGoogle(log.text);
-                                    }}
-                                  >
-                                    <a className="mr-2">
-                                      <Image
-                                        src="https://cdn3.emoji.gg/emojis/8515-google.png"
-                                        width={16}
-                                        height={16}
-                                        alt="Google"
-                                      />
-                                    </a>{' '}
-                                    Search With Google
-                                  </ContextMenuItem>
-                                </ContextMenuContent>
-                              </ContextMenu>
-                            ))}
-                          </ul>
-                        ) : (
-                          <span className="pl-3 text-pretty">
-                            No logs detected.
-                          </span>
-                        )}
-                      </ScrollArea>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
                     <TableCell
                       className="cursor-pointer"
                       onClick={() =>
@@ -382,6 +317,12 @@ const IssueDetails = ({ slug }: Props) => {
           </div>
         </CardContent>
       </Card>
+
+      <ConsoleAndNetworkTable
+        browserConsoleData={issue.browser_console_data}
+        networkData={issue.browser_network_data}
+        handleCopyToClipboard={handleCopyToClipboard}
+      />
 
       <ShareDialogue
         isShareDialogOpen={isShareDialogOpen}

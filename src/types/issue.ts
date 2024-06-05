@@ -1,3 +1,41 @@
+interface browserConsoleData {
+  exceptionDetails?: {
+    columnNumber: number;
+    exception: {
+      className: string;
+      description: string;
+    };
+    exceptionId?: number;
+    objectId: string;
+    subtype: string;
+    type: string;
+    executionContextId: number;
+    lineNumber?: number;
+    scriptId?: string;
+    text?: string;
+    url?: string;
+  };
+  // ARGS BELOW
+  args?: {
+    type: string;
+    value?: string;
+    objectId: string;
+    description?: string;
+  }[];
+  executionContextId: number;
+  stackTrace?: {
+    callFrames: {
+      columnNumber: number;
+      functionName: string;
+      lineNumber: number;
+      scriptId: string;
+      url: string;
+    }[];
+  };
+  timestamp?: number;
+  type?: string;
+}
+
 export interface IssueInterface {
   browser_name: string | null;
   created_at: string;
@@ -16,7 +54,7 @@ export interface IssueInterface {
   screenshot: string;
   url: string | null;
   is_public: boolean;
-  browser_console_data: string;
+  browser_console_data: browserConsoleData[];
   browser_network_data: string;
 }
 
@@ -38,7 +76,7 @@ export class Issue implements IssueInterface {
   screenshot: string = '/LargeLogo.png';
   url: string | null = null;
   is_public: boolean = false;
-  browser_console_data: string = '';
+  browser_console_data: browserConsoleData[] = [];
   browser_network_data: string = '';
   constructor(data?: Partial<Issue>) {
     if (data) {

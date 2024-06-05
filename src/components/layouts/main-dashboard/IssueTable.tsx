@@ -87,6 +87,8 @@ const IssueTable = (props: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, issuesPerPage]);
 
+  console.log('issues:', issues);
+
   return (
     <div>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -104,7 +106,7 @@ const IssueTable = (props: Props) => {
                   <TableHeader>
                     <TableRow className="pointer-events-none">
                       <TableHead>Screenshot</TableHead>
-                      <TableHead>Logs</TableHead>
+                      <TableHead># of Logs</TableHead>
                       <TableHead>Platform Arch</TableHead>
                       <TableHead>Platform OS</TableHead>
                       <TableHead className="hidden md:table-cell">
@@ -137,23 +139,12 @@ const IssueTable = (props: Props) => {
                           />
                         </TableCell>
 
-                        <TableCell className="font-medium">
-                          {issue.logs.length > 0 ? (
+                        <TableCell>
+                          {issue.browser_console_data.length > 0 ? (
                             <div>
-                              <div>
-                                <strong>{issue.logs[0].level}:</strong>{' '}
-                                {issue.logs[0].text.length > 50
-                                  ? `${issue.logs[0].text.substring(0, 50)}...`
-                                  : issue.logs[0].text}
-                                {issue.logs[0].url && (
-                                  <a href={issue.logs[0].url}>Source</a>
-                                )}
-                              </div>
-                              {issue.logs.length > 1 && (
-                                <div>
-                                  <em>and {issue.logs.length - 1} more...</em>
-                                </div>
-                              )}
+                              <strong>
+                                {issue.browser_console_data.length}
+                              </strong>
                             </div>
                           ) : (
                             'No logs detected.'
