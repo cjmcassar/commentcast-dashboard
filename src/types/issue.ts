@@ -5,21 +5,24 @@ interface browserConsoleData {
       className: string;
       description: string;
     };
+    exceptionId?: number;
     objectId: string;
     subtype: string;
     type: string;
-    text: string;
+    executionContextId: number;
+    lineNumber?: number;
+    scriptId?: string;
+    text?: string;
+    url?: string;
   };
-  exceptionId?: number;
-  executionContextId: number;
-  lineNumber?: number;
-  scriptId?: string;
-  text?: string;
-  url?: string;
+  // ARGS BELOW
   args?: {
     type: string;
-    value: string;
+    value?: string;
+    objectId: string;
+    description?: string;
   }[];
+  executionContextId: number;
   stackTrace?: {
     callFrames: {
       columnNumber: number;
