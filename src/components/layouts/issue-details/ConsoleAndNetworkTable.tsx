@@ -108,7 +108,7 @@ export default function ConsoleAndNetworkTable({
                                 : 'text-gray-500'
                             }`}
                           >
-                            {exceptionType}:{' '}
+                            {exceptionType}:{''}
                           </span>
                           <ul key={exceptionType}>
                             {Object.entries(descriptions).map(
@@ -117,7 +117,7 @@ export default function ConsoleAndNetworkTable({
                                   <ContextMenuTrigger asChild>
                                     <li
                                       key={description}
-                                      className="ml-4 list-disc pl-3 break-words cursor-pointer hover:bg-gray-300"
+                                      className="ml-4 list-disc break-words cursor-pointer hover:bg-gray-300"
                                       onClick={() => {
                                         handleCopyToClipboard(
                                           description,
