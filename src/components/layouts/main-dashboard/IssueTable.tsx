@@ -71,6 +71,7 @@ const IssueTable = (props: Props) => {
         .from('issue_snapshots')
         .select('*', { count: 'exact' })
         .eq('uuid', user?.id)
+        .order('created_at', { ascending: false })
         .range(startIndex, startIndex + issuesPerPage);
 
       if (error) {
