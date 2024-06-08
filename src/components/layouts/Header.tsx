@@ -164,8 +164,23 @@ const Header = (props: Props) => {
               </a>
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>Logout</DropdownMenuItem>
+            {userInfo ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  Logout
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <a href="/signup" target="_blank" rel="noreferrer">
+                    Signup
+                  </a>
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
