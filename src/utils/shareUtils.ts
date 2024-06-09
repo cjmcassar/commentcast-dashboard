@@ -51,12 +51,45 @@ export const handleShareConfirm = async (
         description: 'Share the link with your team.',
       } as ToastProps);
     });
-    await supabase
+
+    // Fetch the current 'shared_with' array
+    const { data, error } = await supabase
       .from('issue_snapshots')
-      .update({ shared_with: [sharedWithEmail] })
+      .select('shared_with')
+      .eq('id', selectedIssueId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching shared_with array:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update sharing details. Please try again.',
+      } as ToastProps);
+      return;
+    }
+
+    // Use a Set to ensure the email is unique in the array
+    const updatedSharedWith = Array.from(
+      new Set([...data.shared_with, sharedWithEmail])
+    );
+
+    console.log('updatedSharedWith', updatedSharedWith);
+
+    // Update the record with the new array
+    const { error: updateError } = await supabase
+      .from('issue_snapshots')
+      .update({ shared_with: updatedSharedWith })
       .eq('id', selectedIssueId);
 
-    setIsShareDialogOpen(false);
+    if (updateError) {
+      console.error('Error updating shared_with array:', updateError);
+      toast({
+        title: 'Error',
+        description: 'Failed to update sharing details. Please try again.',
+      } as ToastProps);
+    } else {
+      setIsShareDialogOpen(false);
+    }
   } else {
     toast({
       title: 'Invalid Submission',
