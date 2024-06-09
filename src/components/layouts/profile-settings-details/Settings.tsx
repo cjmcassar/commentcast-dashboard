@@ -93,7 +93,6 @@ export function SettingsDetails() {
       setCombinedPublicAndSharedIssues(uniqueIssues);
     };
 
-    console.log('useEffect  fetchSharedIssues');
     fetchSharedIssues();
   }, [supabase]);
 
