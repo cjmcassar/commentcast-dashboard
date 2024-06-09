@@ -77,7 +77,7 @@ export function SettingsDetails() {
       let getSharedIssues = async () => {
         const response = await sharedQuery
           .eq('uuid', user?.id)
-          .not('shared_with', 'is', null);
+          .not('shared_with', 'in', [null, '[]']);
         return response.data ?? [];
       };
 
