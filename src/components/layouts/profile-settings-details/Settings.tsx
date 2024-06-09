@@ -77,7 +77,8 @@ export function SettingsDetails() {
       let getSharedIssues = async () => {
         const response = await sharedQuery
           .eq('uuid', user?.id)
-          .not('shared_with', 'in', [null, '[]']);
+          .not('shared_with', 'is', null)
+          .neq('shared_with', '{}');
         return response.data ?? [];
       };
 
@@ -92,7 +93,6 @@ export function SettingsDetails() {
       setCombinedPublicAndSharedIssues(uniqueIssues);
     };
 
-    console.log('useEffect  fetchSharedIssues');
     fetchSharedIssues();
   }, [supabase]);
 
