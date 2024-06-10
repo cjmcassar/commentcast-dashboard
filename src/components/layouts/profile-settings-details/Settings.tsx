@@ -29,6 +29,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -54,12 +61,19 @@ export function SettingsDetails() {
   const [sharedWithEmail, setSharedWithEmail] = useState('');
   const [isPublic, setIsPublic] = useState<boolean>();
   const [updatedEmail, setUpdatedEmail] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalIssues, setTotalIssues] = useState(0);
+  const [issuesPerPage] = useState(3);
+  const [currentPopoverPage, setCurrentPopoverPage] = useState(1);
+  const [totalEmails, setTotalEmails] = useState(0);
+  const [emailsPerPage] = useState(5);
 
   const supabase = createClient();
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchSharedIssues = async () => {
+      const startIndex = (currentPage - 1) * issuesPerPage;
       const { data: userData } = await supabase.auth.getUser();
       const user = userData?.user;
       setUser(user);
@@ -70,7 +84,9 @@ export function SettingsDetails() {
       let getPublicIssues = async () => {
         const response = await publicQuery
           .eq('is_public', true)
-          .eq('uuid', user?.id);
+          .eq('uuid', user?.id)
+          .order('created_at', { ascending: false })
+          .range(startIndex, startIndex + issuesPerPage);
         return response.data ?? [];
       };
 
@@ -78,7 +94,9 @@ export function SettingsDetails() {
         const response = await sharedQuery
           .eq('uuid', user?.id)
           .not('shared_with', 'is', null)
-          .neq('shared_with', '{}');
+          .neq('shared_with', '{}')
+          .order('created_at', { ascending: false })
+          .range(startIndex, startIndex + issuesPerPage);
         return response.data ?? [];
       };
 
@@ -91,10 +109,12 @@ export function SettingsDetails() {
           index === self.findIndex((i) => i.id === issue.id)
       );
       setCombinedPublicAndSharedIssues(uniqueIssues);
+      setIssues(uniqueIssues);
+      setTotalIssues(uniqueIssues.length);
     };
 
     fetchSharedIssues();
-  }, [supabase]);
+  }, [currentPage, issuesPerPage, supabase]);
 
   const handleUpdateEmail = async (updatedEmail: string, issueId: number) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -241,7 +261,10 @@ export function SettingsDetails() {
                           <Popover key={issue.id}>
                             <PopoverTrigger
                               asChild
-                              onClick={() => setUpdatedEmail(issue.shared_with)}
+                              onClick={() => {
+                                setUpdatedEmail(issue.shared_with);
+                                setTotalEmails(issue.shared_with?.length || 0);
+                              }}
                             >
                               <a
                                 aria-haspopup="true"
@@ -249,9 +272,14 @@ export function SettingsDetails() {
                               >
                                 {issue.shared_with &&
                                 issue.shared_with.length > 0 ? (
-                                  issue.shared_with.map((email: string) => (
-                                    <span key={email}>{email}, </span>
-                                  ))
+                                  issue.shared_with.length === 1 ? (
+                                    <span>{issue.shared_with[0]}</span>
+                                  ) : (
+                                    <span>
+                                      {issue.shared_with[0]} +{' '}
+                                      {issue.shared_with.length - 1} more
+                                    </span>
+                                  )
                                 ) : (
                                   <span>Public</span>
                                 )}
@@ -281,23 +309,70 @@ export function SettingsDetails() {
                                 </TableHeader>
 
                                 <TableBody>
-                                  {issue.shared_with?.map((email: string) => (
-                                    <TableRow key={email}>
-                                      <TableCell>{email}</TableCell>
-                                      <TableCell>
-                                        <Button
-                                          variant="destructive"
-                                          onClick={() => {
-                                            handleRemoveEmail(email, issue.id);
-                                          }}
-                                        >
-                                          Remove
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
+                                  {issue.shared_with
+                                    ?.slice(
+                                      (currentPopoverPage - 1) * emailsPerPage,
+                                      currentPopoverPage * emailsPerPage
+                                    )
+                                    .map((email: string) => (
+                                      <TableRow key={email}>
+                                        <TableCell>{email}</TableCell>
+                                        <TableCell>
+                                          <Button
+                                            variant="destructive"
+                                            onClick={() => {
+                                              handleRemoveEmail(
+                                                email,
+                                                issue.id
+                                              );
+                                            }}
+                                          >
+                                            Remove
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
                                 </TableBody>
                               </Table>
+                              <Pagination>
+                                <PaginationContent>
+                                  <PaginationItem>
+                                    <PaginationPrevious
+                                      className={
+                                        currentPopoverPage === 1
+                                          ? 'pointer-events-none opacity-50'
+                                          : undefined
+                                      }
+                                      onClick={() => {
+                                        setCurrentPopoverPage(
+                                          currentPopoverPage - 1
+                                        );
+                                      }}
+                                    />
+                                  </PaginationItem>
+
+                                  <PaginationItem>
+                                    <PaginationNext
+                                      className={
+                                        currentPopoverPage * emailsPerPage >=
+                                        totalEmails
+                                          ? 'pointer-events-none opacity-50'
+                                          : undefined
+                                      }
+                                      onClick={() => {
+                                        if (
+                                          currentPopoverPage * emailsPerPage <
+                                          totalEmails
+                                        ) {
+                                          setCurrentPopoverPage(
+                                            currentPopoverPage + 1
+                                          );
+                                        }
+                                      }}
+                                    />
+                                  </PaginationItem>
+                                </PaginationContent>
+                              </Pagination>
                             </PopoverContent>
                           </Popover>
                         </TableCell>
@@ -364,7 +439,39 @@ export function SettingsDetails() {
                   </TableBody>
                 </Table>
               </CardContent>
-              <CardFooter className="border-t px-6 py-4"></CardFooter>
+              <CardFooter className="border-t px-6 py-4">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        className={
+                          currentPage === 1
+                            ? 'pointer-events-none opacity-50'
+                            : undefined
+                        }
+                        onClick={() => {
+                          setCurrentPage(currentPage - 1);
+                        }}
+                      />
+                    </PaginationItem>
+
+                    <PaginationItem>
+                      <PaginationNext
+                        className={
+                          currentPage * issuesPerPage >= totalIssues
+                            ? 'pointer-events-none opacity-50'
+                            : undefined
+                        }
+                        onClick={() => {
+                          if (currentPage * issuesPerPage < totalIssues) {
+                            setCurrentPage(currentPage + 1);
+                          }
+                        }}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </CardFooter>
             </Card>
           </div>
         </div>
