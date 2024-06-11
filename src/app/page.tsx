@@ -13,7 +13,6 @@ export default async function Home() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    console.log('No user found, redirecting to login');
     redirect('/login');
   }
 

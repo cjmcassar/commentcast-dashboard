@@ -12,7 +12,5 @@ export default async function PrivatePage() {
     redirect('/login');
   }
 
-  console.log('user data', data);
-
   return <p>Hello {data.user.email}</p>;
 }

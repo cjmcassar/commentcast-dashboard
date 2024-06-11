@@ -28,7 +28,6 @@ export const handlePublicSwitchChange = async (
         description: 'Failed to update issue visibility. Please try again.',
       } as ToastProps);
     } else {
-      console.log('Issue visibility updated:', data.is_public);
       toast({
         title: 'Success',
         description: data.is_public
