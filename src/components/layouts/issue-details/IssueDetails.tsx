@@ -4,6 +4,7 @@ import DeleteDialogue from '@/components/layouts/DeleteDialogue';
 import ImageDialogue from '@/components/layouts/ImageDialogue';
 import ShareDialogue from '@/components/layouts/ShareDialogue';
 import ConsoleAndNetworkTable from '@/components/layouts/issue-details/ConsoleAndNetworkTable';
+import IssueDetailsLoading from '@/components/layouts/issue-details/IssueDetailsLoading';
 import { Issue } from '@/types/issue';
 import { handleDeleteClick } from '@/utils/deleteIssueUtils';
 import { handleShareClick } from '@/utils/shareUtils';
@@ -29,6 +30,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -51,7 +53,6 @@ const IssueDetails = ({ slug }: Props) => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [ownsIssue, setOwnsIssue] = useState(false);
   const [isPublic, setIsPublic] = useState<boolean>();
-
   const [sharedWithEmail, setSharedWithEmail] = useState('');
 
   const supabase = createClient();
@@ -103,10 +104,6 @@ const IssueDetails = ({ slug }: Props) => {
       if (error) {
         return;
       }
-
-      console.log('data', data);
-
-      console.log('user', user);
 
       setOwnsIssue(data.uuid === user.id);
     };
@@ -215,104 +212,118 @@ const IssueDetails = ({ slug }: Props) => {
                   className="bg-muted cursor-pointer rounded"
                   onClick={handleImageClick}
                 >
-                  <Image
-                    alt="Product image"
-                    className="aspect-square object-contain rounded"
-                    fill={true}
-                    src={issue.screenshot}
-                  />
+                  {issue.id === 0 ? (
+                    <Skeleton className="h-full w-full" />
+                  ) : (
+                    <Image
+                      alt="Product image"
+                      className="aspect-square object-contain rounded"
+                      fill={true}
+                      src={issue.screenshot}
+                    />
+                  )}
                 </AspectRatio>
               </div>
 
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Browser Details </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="">
-                  <TableRow>
-                    <TableCell
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleCopyToClipboard(
-                          issue.platform_arch,
-                          'Platform Arch'
-                        )
-                      }
-                    >
-                      <strong>Platform Arch:</strong> {issue.platform_arch}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleCopyToClipboard(issue.platform_os, 'Platform OS')
-                      }
-                    >
-                      <strong>Platform OS:</strong> {issue.platform_os}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      className="hidden md:table-cell cursor-pointer"
-                      onClick={() =>
-                        handleCopyToClipboard(issue.url || '', 'Source URL')
-                      }
-                    >
-                      <strong>Source URL:</strong> {issue.url}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      className="hidden md:table-cell cursor-pointer"
-                      onClick={() =>
-                        handleCopyToClipboard(
-                          `${issue.primary_display_dimensions?.primary_display_width} x ${issue.primary_display_dimensions?.primary_display_height}`,
-                          'Primary Display'
-                        )
-                      }
-                    >
-                      <strong>Primary Display:</strong>{' '}
-                      {issue.primary_display_dimensions
-                        ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
-                        : 'N/A'}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleCopyToClipboard(
-                          issue.browser_name || '',
-                          'Browser Name'
-                        )
-                      }
-                    >
-                      <strong>Browser Name:</strong> {issue.browser_name}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleCopyToClipboard(issue.created_at || '', 'Date')
-                      }
-                    >
-                      <strong>Date:</strong>{' '}
-                      {new Date(issue.created_at).toLocaleDateString('en-UK', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true,
-                      })}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
+              {issue.id !== 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Browser Details </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="">
+                    <TableRow>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={() =>
+                          handleCopyToClipboard(
+                            issue.platform_arch,
+                            'Platform Arch'
+                          )
+                        }
+                      >
+                        <strong>Platform Arch:</strong> {issue.platform_arch}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={() =>
+                          handleCopyToClipboard(
+                            issue.platform_os,
+                            'Platform OS'
+                          )
+                        }
+                      >
+                        <strong>Platform OS:</strong> {issue.platform_os}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        className="hidden md:table-cell cursor-pointer"
+                        onClick={() =>
+                          handleCopyToClipboard(issue.url || '', 'Source URL')
+                        }
+                      >
+                        <strong>Source URL:</strong> {issue.url}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        className="hidden md:table-cell cursor-pointer"
+                        onClick={() =>
+                          handleCopyToClipboard(
+                            `${issue.primary_display_dimensions?.primary_display_width} x ${issue.primary_display_dimensions?.primary_display_height}`,
+                            'Primary Display'
+                          )
+                        }
+                      >
+                        <strong>Primary Display:</strong>{' '}
+                        {issue.primary_display_dimensions
+                          ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
+                          : 'N/A'}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={() =>
+                          handleCopyToClipboard(
+                            issue.browser_name || '',
+                            'Browser Name'
+                          )
+                        }
+                      >
+                        <strong>Browser Name:</strong> {issue.browser_name}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
+                        className="cursor-pointer"
+                        onClick={() =>
+                          handleCopyToClipboard(issue.created_at || '', 'Date')
+                        }
+                      >
+                        <strong>Date:</strong>{' '}
+                        {new Date(issue.created_at).toLocaleDateString(
+                          'en-UK',
+                          {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true,
+                          }
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              ) : (
+                <IssueDetailsLoading />
+              )}
             </div>
           </div>
         </CardContent>
