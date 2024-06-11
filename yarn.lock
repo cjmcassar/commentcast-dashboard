@@ -1679,6 +1679,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vercel/speed-insights@npm:^1.0.11":
+  version: 1.0.11
+  resolution: "@vercel/speed-insights@npm:1.0.11"
+  peerDependencies:
+    "@sveltejs/kit": ^1 || ^2
+    next: ">= 13"
+    react: ^18 || ^19
+    svelte: ^4
+    vue: ^3
+    vue-router: ^4
+  peerDependenciesMeta:
+    "@sveltejs/kit":
+      optional: true
+    next:
+      optional: true
+    react:
+      optional: true
+    svelte:
+      optional: true
+    vue:
+      optional: true
+    vue-router:
+      optional: true
+  checksum: 2395ce10c2c00560d95e2097ba649a103ade7dd2d0c57f826918950bb3be50230084227040d6299e609440c838208dd368f577c61246fe8ff5a2b383dbc73a4e
+  languageName: node
+  linkType: hard
+
 "@vue/compiler-core@npm:3.4.27":
   version: 3.4.27
   resolution: "@vue/compiler-core@npm:3.4.27"
@@ -2377,6 +2404,7 @@ __metadata:
     "@types/node": ^20
     "@types/react": ^18
     "@types/react-dom": ^18
+    "@vercel/speed-insights": ^1.0.11
     autoprefixer: ^10.4.19
     class-variance-authority: ^0.7.0
     clsx: ^2.1.1
