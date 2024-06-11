@@ -7,8 +7,6 @@ export async function signOut() {
 
   try {
     await supabase.auth.signOut();
-
-    console.log('Sign out successful');
   } catch (error) {
     console.error('Sign out failed', error);
   }

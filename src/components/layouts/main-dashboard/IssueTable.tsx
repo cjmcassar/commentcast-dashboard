@@ -2,6 +2,7 @@
 
 import DeleteDialogue from '@/components/layouts/DeleteDialogue';
 import ShareDialogue from '@/components/layouts/ShareDialogue';
+import IssueTableLoading from '@/components/layouts/main-dashboard/IssueTableLoading';
 import { Issue } from '@/types/issue';
 import { handleDeleteClick } from '@/utils/deleteIssueUtils';
 import { handleShareClick } from '@/utils/shareUtils';
@@ -79,206 +80,204 @@ const IssueTable = (props: Props) => {
         return;
       }
 
-      console.log('issue_snapshots data from supabase:', data);
       setIssues(data);
       setTotalIssues(count || 0);
     };
 
     fetchIssues();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, issuesPerPage]);
-
-  console.log('issues:', issues);
+  }, [currentPage, issuesPerPage, supabase]);
 
   return (
     <div>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <Tabs defaultValue="all">
-          <TabsContent value="all">
-            <Card x-chunk="dashboard-06-chunk-0">
-              <CardHeader>
-                <CardTitle>Issues</CardTitle>
-                <CardDescription>
-                  Manage your issues and share them with your team.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow className="pointer-events-none">
-                      <TableHead>Screenshot</TableHead>
-                      <TableHead># of Logs</TableHead>
-                      <TableHead>Platform Arch</TableHead>
-                      <TableHead>Platform OS</TableHead>
-                      <TableHead className="hidden md:table-cell">
-                        Source URL
-                      </TableHead>
-                      <TableHead className="hidden md:table-cell">
-                        Primary Display
-                      </TableHead>
-                      <TableHead>Browser Name</TableHead>
-                      <TableHead>Created At</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {issues.map((issue) => (
-                      <TableRow
-                        key={issue.id}
-                        className="cursor-pointer"
-                        onClick={() => router.push(`/issues/${issue.id}`)}
-                      >
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Issue screenshot"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src={
-                              issue.screenshot ||
-                              '/placeholder-issue-screenshot.svg'
-                            }
-                            width="64"
-                          />
-                        </TableCell>
-
-                        <TableCell>
-                          {issue.browser_console_data.length > 0 ? (
-                            <div>
-                              <strong>
-                                {issue.browser_console_data.length}
-                              </strong>
-                            </div>
-                          ) : (
-                            'No logs detected.'
-                          )}
-                        </TableCell>
-
-                        <TableCell>{issue.platform_arch}</TableCell>
-
-                        <TableCell>{issue.platform_os}</TableCell>
-
-                        <TableCell className="hidden md:table-cell">
-                          {issue.url && issue.url.length > 30
-                            ? `${issue.url.substring(0, 30)}...`
-                            : issue.url}
-                        </TableCell>
-
-                        <TableCell className="hidden md:table-cell">
-                          {issue.primary_display_dimensions
-                            ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
-                            : 'N/A'}
-                        </TableCell>
-
-                        <TableCell>{issue.browser_name}</TableCell>
-
-                        <TableCell>
-                          {new Date(issue.created_at).toLocaleDateString(
-                            'en-UK',
-                            {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: 'numeric',
-                              minute: 'numeric',
-                              hour12: true,
-                            }
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MoreHorizontal className="w-4 h-4" />
-                                <span className="sr-only">Open options</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleShareClick(
-                                    issue.id,
-                                    setSelectedIssueId,
-                                    setIsShareDialogOpen,
-                                    setIsPublic,
-                                    toast
-                                  );
-                                }}
-                              >
-                                <Share className="w-4 h-4" />
-                                <span className="ml-2 ">Share Issue</span>
-                              </DropdownMenuItem>
-
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteClick(
-                                    issue.id,
-                                    setSelectedIssueId,
-                                    setIsDeleteDialogOpen
-                                  );
-                                }}
-                              >
-                                <TrashIcon className="w-4 h-4" />
-                                <span className="ml-2 ">Delete</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              <CardFooter>
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        className={
-                          currentPage === 1
-                            ? 'pointer-events-none opacity-50'
-                            : undefined
-                        }
-                        onClick={() => {
-                          setCurrentPage(currentPage - 1);
-                        }}
-                      />
-                    </PaginationItem>
-
-                    <PaginationItem>
-                      <PaginationNext
-                        className={
-                          currentPage * issuesPerPage >= totalIssues
-                            ? 'pointer-events-none opacity-50'
-                            : undefined
-                        }
-                        onClick={() => {
-                          if (currentPage * issuesPerPage < totalIssues) {
-                            setCurrentPage(currentPage + 1);
+        {/* <Tabs defaultValue="all">
+          <TabsContent value="all"> */}
+        <Card x-chunk="dashboard-06-chunk-0">
+          <CardHeader>
+            <CardTitle>Issues</CardTitle>
+            <CardDescription>
+              Manage your issues and share them with your team.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {issues.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow className="pointer-events-none">
+                    <TableHead>Screenshot</TableHead>
+                    <TableHead># of Logs</TableHead>
+                    <TableHead>Platform Arch</TableHead>
+                    <TableHead>Platform OS</TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Source URL
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell">
+                      Primary Display
+                    </TableHead>
+                    <TableHead>Browser Name</TableHead>
+                    <TableHead>Created At</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {issues.map((issue) => (
+                    <TableRow
+                      key={issue.id}
+                      className="cursor-pointer"
+                      onClick={() => router.push(`/issues/${issue.id}`)}
+                    >
+                      <TableCell className="hidden sm:table-cell">
+                        <Image
+                          alt="Issue screenshot"
+                          className="aspect-square rounded-md object-cover"
+                          height="64"
+                          src={
+                            issue.screenshot ||
+                            '/placeholder-issue-screenshot.svg'
                           }
-                        }}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                          width="64"
+                        />
+                      </TableCell>
 
-                <div className="text-xs text-muted-foreground">
-                  Showing{' '}
-                  <strong>
-                    {currentPage * issuesPerPage - issuesPerPage + 1}-
-                    {Math.min(currentPage * issuesPerPage, totalIssues)}
-                  </strong>{' '}
-                  of <strong>{totalIssues}</strong> issues
-                </div>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                      <TableCell>
+                        {issue.browser_console_data.length > 0 ? (
+                          <div>
+                            <strong>{issue.browser_console_data.length}</strong>
+                          </div>
+                        ) : (
+                          'No logs detected.'
+                        )}
+                      </TableCell>
+
+                      <TableCell>{issue.platform_arch}</TableCell>
+
+                      <TableCell>{issue.platform_os}</TableCell>
+
+                      <TableCell className="hidden md:table-cell">
+                        {issue.url && issue.url.length > 30
+                          ? `${issue.url.substring(0, 30)}...`
+                          : issue.url}
+                      </TableCell>
+
+                      <TableCell className="hidden md:table-cell">
+                        {issue.primary_display_dimensions
+                          ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
+                          : 'N/A'}
+                      </TableCell>
+
+                      <TableCell>{issue.browser_name}</TableCell>
+
+                      <TableCell>
+                        {new Date(issue.created_at).toLocaleDateString(
+                          'en-UK',
+                          {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: 'numeric',
+                            hour12: true,
+                          }
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              aria-haspopup="true"
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                              <span className="sr-only">Open options</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleShareClick(
+                                  issue.id,
+                                  setSelectedIssueId,
+                                  setIsShareDialogOpen,
+                                  setIsPublic,
+                                  toast
+                                );
+                              }}
+                            >
+                              <Share className="w-4 h-4" />
+                              <span className="ml-2 ">Share Issue</span>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(
+                                  issue.id,
+                                  setSelectedIssueId,
+                                  setIsDeleteDialogOpen
+                                );
+                              }}
+                            >
+                              <TrashIcon className="w-4 h-4" />
+                              <span className="ml-2 ">Delete</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <IssueTableLoading />
+            )}
+          </CardContent>
+          <CardFooter>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    className={
+                      currentPage === 1
+                        ? 'pointer-events-none opacity-50'
+                        : undefined
+                    }
+                    onClick={() => {
+                      setCurrentPage(currentPage - 1);
+                    }}
+                  />
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationNext
+                    className={
+                      currentPage * issuesPerPage >= totalIssues
+                        ? 'pointer-events-none opacity-50'
+                        : undefined
+                    }
+                    onClick={() => {
+                      if (currentPage * issuesPerPage < totalIssues) {
+                        setCurrentPage(currentPage + 1);
+                      }
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+
+            <div className="text-xs text-muted-foreground">
+              Showing{' '}
+              <strong>
+                {currentPage * issuesPerPage - issuesPerPage + 1}-
+                {Math.min(currentPage * issuesPerPage, totalIssues)}
+              </strong>{' '}
+              of <strong>{totalIssues}</strong> issues
+            </div>
+          </CardFooter>
+        </Card>
+        {/* </TabsContent>
+        </Tabs> */}
       </main>
 
       <ShareDialogue

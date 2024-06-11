@@ -66,10 +66,6 @@ const ShareDialogue = ({
         return;
       }
 
-      console.log('data', data);
-
-      console.log('user', user);
-
       setOwnsIssue(data.uuid === user.id);
     };
 

@@ -66,7 +66,7 @@ const Header = (props: Props) => {
         } = await supabase.auth.getSession();
         if (session) {
           const userEmail = session.user?.email || '';
-          console.log('userEmail', userEmail);
+
           setUserInfo({
             email: userEmail,
           });

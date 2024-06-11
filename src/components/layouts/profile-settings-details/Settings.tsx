@@ -40,6 +40,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -231,7 +232,11 @@ export function SettingsDetails() {
               </CardHeader>
               <CardContent>
                 <form>
-                  <Input placeholder={`${user?.email}`} disabled />
+                  {combinedPublicAndSharedIssues ? (
+                    <Input placeholder={`${user?.email}`} disabled />
+                  ) : (
+                    <Skeleton className="h-4 w-[100%]" />
+                  )}
                 </form>
               </CardContent>
             </Card>
@@ -243,201 +248,220 @@ export function SettingsDetails() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableCell>Issue</TableCell>
-                      <TableCell>Shared With</TableCell>
-                      <TableCell>Issue Link</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHeader>
-
-                  <TableBody>
-                    {combinedPublicAndSharedIssues?.map((issue) => (
-                      <TableRow key={issue.id}>
-                        <TableCell>{issue.id}</TableCell>
-                        <TableCell>
-                          <Popover key={issue.id}>
-                            <PopoverTrigger
-                              asChild
-                              onClick={() => {
-                                setUpdatedEmail(issue.shared_with);
-                                setTotalEmails(issue.shared_with?.length || 0);
-                              }}
-                            >
-                              <a
-                                aria-haspopup="true"
-                                className="cursor-pointer"
+                {combinedPublicAndSharedIssues ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableCell>Issue</TableCell>
+                        <TableCell>Shared With</TableCell>
+                        <TableCell>Issue Link</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {combinedPublicAndSharedIssues.map((issue) => (
+                        <TableRow key={issue.id}>
+                          <TableCell>{issue.id}</TableCell>
+                          <TableCell>
+                            <Popover key={issue.id}>
+                              <PopoverTrigger
+                                asChild
+                                onClick={() => {
+                                  setUpdatedEmail(issue.shared_with);
+                                  setTotalEmails(
+                                    issue.shared_with?.length || 0
+                                  );
+                                }}
                               >
-                                {issue.shared_with &&
-                                issue.shared_with.length > 0 ? (
-                                  issue.shared_with.length === 1 ? (
-                                    <span>{issue.shared_with[0]}</span>
-                                  ) : (
-                                    <span>
-                                      {issue.shared_with[0]} +{' '}
-                                      {issue.shared_with.length - 1} more
-                                    </span>
-                                  )
-                                ) : (
-                                  <span>Public</span>
-                                )}
-                              </a>
-                            </PopoverTrigger>
-
-                            <PopoverContent className="w-full">
-                              <Input
-                                name="emailInput"
-                                type="email"
-                                placeholder="Add email"
-                                onChange={(e) => {
-                                  setUpdatedEmail(e.target.value);
-                                }}
-                                onBlur={(e) => {
-                                  const target = e.target as HTMLInputElement;
-                                  if (target.value) {
-                                    handleUpdateEmail(updatedEmail, issue.id);
-                                  }
-                                }}
-                              />
-                              <Table>
-                                <TableHeader>
-                                  <TableRow>
-                                    <TableCell>Email</TableCell>
-                                  </TableRow>
-                                </TableHeader>
-
-                                <TableBody>
-                                  {issue.shared_with
-                                    ?.slice(
-                                      (currentPopoverPage - 1) * emailsPerPage,
-                                      currentPopoverPage * emailsPerPage
+                                <a
+                                  aria-haspopup="true"
+                                  className="cursor-pointer"
+                                >
+                                  {issue.shared_with &&
+                                  issue.shared_with.length > 0 ? (
+                                    issue.shared_with.length === 1 ? (
+                                      <span>{issue.shared_with[0]}</span>
+                                    ) : (
+                                      <span>
+                                        {issue.shared_with[0]} +{' '}
+                                        {issue.shared_with.length - 1} more
+                                      </span>
                                     )
-                                    .map((email: string) => (
-                                      <TableRow key={email}>
-                                        <TableCell>{email}</TableCell>
+                                  ) : (
+                                    <span>Public</span>
+                                  )}
+                                </a>
+                              </PopoverTrigger>
+
+                              <PopoverContent className="w-full">
+                                <Input
+                                  name="emailInput"
+                                  type="email"
+                                  placeholder="Add email"
+                                  onChange={(e) => {
+                                    setUpdatedEmail(e.target.value);
+                                  }}
+                                  onBlur={(e) => {
+                                    const target = e.target as HTMLInputElement;
+                                    if (target.value) {
+                                      handleUpdateEmail(updatedEmail, issue.id);
+                                    }
+                                  }}
+                                />
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      <TableCell>Email</TableCell>
+                                    </TableRow>
+                                  </TableHeader>
+
+                                  <TableBody>
+                                    {issue ? (
+                                      issue.shared_with
+                                        ?.slice(
+                                          (currentPopoverPage - 1) *
+                                            emailsPerPage,
+                                          currentPopoverPage * emailsPerPage
+                                        )
+                                        .map((email: string) => (
+                                          <TableRow key={email}>
+                                            <TableCell>{email}</TableCell>
+                                            <TableCell>
+                                              <Button
+                                                variant="destructive"
+                                                onClick={() => {
+                                                  handleRemoveEmail(
+                                                    email,
+                                                    issue.id
+                                                  );
+                                                }}
+                                              >
+                                                Remove
+                                              </Button>
+                                            </TableCell>
+                                          </TableRow>
+                                        ))
+                                    ) : (
+                                      <TableRow>
                                         <TableCell>
-                                          <Button
-                                            variant="destructive"
-                                            onClick={() => {
-                                              handleRemoveEmail(
-                                                email,
-                                                issue.id
-                                              );
-                                            }}
-                                          >
-                                            Remove
-                                          </Button>
+                                          <Skeleton className="h-4 w-[250px]" />
                                         </TableCell>
                                       </TableRow>
-                                    ))}
-                                </TableBody>
-                              </Table>
-                              <Pagination>
-                                <PaginationContent>
-                                  <PaginationItem>
-                                    <PaginationPrevious
-                                      className={
-                                        currentPopoverPage === 1
-                                          ? 'pointer-events-none opacity-50'
-                                          : undefined
-                                      }
-                                      onClick={() => {
-                                        setCurrentPopoverPage(
-                                          currentPopoverPage - 1
-                                        );
-                                      }}
-                                    />
-                                  </PaginationItem>
-
-                                  <PaginationItem>
-                                    <PaginationNext
-                                      className={
-                                        currentPopoverPage * emailsPerPage >=
-                                        totalEmails
-                                          ? 'pointer-events-none opacity-50'
-                                          : undefined
-                                      }
-                                      onClick={() => {
-                                        if (
-                                          currentPopoverPage * emailsPerPage <
-                                          totalEmails
-                                        ) {
-                                          setCurrentPopoverPage(
-                                            currentPopoverPage + 1
-                                          );
+                                    )}
+                                  </TableBody>
+                                </Table>
+                                <Pagination>
+                                  <PaginationContent>
+                                    <PaginationItem>
+                                      <PaginationPrevious
+                                        className={
+                                          currentPopoverPage === 1
+                                            ? 'pointer-events-none opacity-50'
+                                            : undefined
                                         }
-                                      }}
-                                    />
-                                  </PaginationItem>
-                                </PaginationContent>
-                              </Pagination>
-                            </PopoverContent>
-                          </Popover>
-                        </TableCell>
-                        <TableCell>
-                          <Link
-                            className="text-blue-600 hover:underline"
-                            href={
-                              process.env.NEXT_PUBLIC_IS_DEV === 'true'
-                                ? `http://localhost:3000/issues/${issue.id}`
-                                : `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/issues/${issue.id}`
-                            }
-                          >
-                            {`/issues/${issue.id}`}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MoreHorizontal className="w-4 h-4" />
-                                <span className="sr-only">Open options</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleShareClick(
-                                    issue.id,
-                                    setSelectedIssueId,
-                                    setIsShareDialogOpen,
-                                    setIsPublic,
-                                    toast
-                                  );
-                                }}
-                              >
-                                <Share className="w-4 h-4" />
-                                <span className="ml-2 ">Share Issue</span>
-                              </DropdownMenuItem>
+                                        onClick={() => {
+                                          setCurrentPopoverPage(
+                                            currentPopoverPage - 1
+                                          );
+                                        }}
+                                      />
+                                    </PaginationItem>
 
-                              <DropdownMenuItem
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteClick(
-                                    issue.id,
-                                    setSelectedIssueId,
-                                    setIsDeleteDialogOpen
-                                  );
-                                }}
-                              >
-                                <TrashIcon className="w-4 h-4" />
-                                <span className="ml-2 ">Delete</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                                    <PaginationItem>
+                                      <PaginationNext
+                                        className={
+                                          currentPopoverPage * emailsPerPage >=
+                                          totalEmails
+                                            ? 'pointer-events-none opacity-50'
+                                            : undefined
+                                        }
+                                        onClick={() => {
+                                          if (
+                                            currentPopoverPage * emailsPerPage <
+                                            totalEmails
+                                          ) {
+                                            setCurrentPopoverPage(
+                                              currentPopoverPage + 1
+                                            );
+                                          }
+                                        }}
+                                      />
+                                    </PaginationItem>
+                                  </PaginationContent>
+                                </Pagination>
+                              </PopoverContent>
+                            </Popover>
+                          </TableCell>
+                          <TableCell>
+                            <Link
+                              className="text-blue-600 hover:underline"
+                              href={
+                                process.env.NEXT_PUBLIC_IS_DEV === 'true'
+                                  ? `http://localhost:3000/issues/${issue.id}`
+                                  : `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/issues/${issue.id}`
+                              }
+                            >
+                              {`/issues/${issue.id}`}
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  aria-haspopup="true"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreHorizontal className="w-4 h-4" />
+                                  <span className="sr-only">Open options</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleShareClick(
+                                      issue.id,
+                                      setSelectedIssueId,
+                                      setIsShareDialogOpen,
+                                      setIsPublic,
+                                      toast
+                                    );
+                                  }}
+                                >
+                                  <Share className="w-4 h-4" />
+                                  <span className="ml-2 ">Share Issue</span>
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteClick(
+                                      issue.id,
+                                      setSelectedIssueId,
+                                      setIsDeleteDialogOpen
+                                    );
+                                  }}
+                                >
+                                  <TrashIcon className="w-4 h-4" />
+                                  <span className="ml-2 ">Delete</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <>
+                    <Skeleton className="h-4 w-[100%] mb-3" />
+                    <Skeleton className="h-4 w-[100%] mb-3" />
+                    <Skeleton className="h-4 w-[100%] mb-3" />
+                    <Skeleton className="h-4 w-[100%] mb-3" />
+                  </>
+                )}
               </CardContent>
               <CardFooter className="border-t px-6 py-4">
                 <Pagination>

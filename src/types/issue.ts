@@ -73,7 +73,7 @@ export class Issue implements IssueInterface {
     primary_display_width: string;
     primary_display_height: string;
   } | null = null;
-  screenshot: string = '/LargeLogo.png';
+  screenshot: string = '';
   url: string | null = null;
   is_public: boolean = false;
   browser_console_data: browserConsoleData[] = [];

@@ -73,8 +73,6 @@ export const handleShareConfirm = async (
       new Set([...data.shared_with, sharedWithEmail])
     );
 
-    console.log('updatedSharedWith', updatedSharedWith);
-
     // Update the record with the new array
     const { error: updateError } = await supabase
       .from('issue_snapshots')

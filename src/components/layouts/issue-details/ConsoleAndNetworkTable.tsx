@@ -1,3 +1,4 @@
+import ConsoleAndNetworkTableLoading from '@/components/layouts/issue-details/ConsoleAndNetworkTableLoading';
 import { Issue } from '@/types/issue';
 
 import React from 'react';
@@ -37,7 +38,6 @@ export default function ConsoleAndNetworkTable({
   networkData,
   handleCopyToClipboard,
 }: Props) {
-  console.log('browserConsoleData', browserConsoleData);
   //   console.log('networkData', networkData);
 
   const processedData = browserConsoleData.reduce(
@@ -69,8 +69,6 @@ export default function ConsoleAndNetworkTable({
     window.open(url, '_blank');
   };
 
-  console.log('processedData', processedData);
-
   return (
     <div className="mt-4 grid grid-cols-1 gap-1">
       <Card className="overflow-hidden min-w-[300px] sm:min-w-[400px] md:min-w-[500px] lg:min-w-[1000px]">
@@ -78,61 +76,124 @@ export default function ConsoleAndNetworkTable({
           <CardTitle>Console Logs</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>
-                  Console - (
-                  {Object.keys(processedData.exceptions).length === 1
-                    ? '1 Exception Type'
-                    : `${Object.keys(processedData.exceptions).length} Exception Types`}
-                  ,{' '}
-                  {Object.keys(processedData.args).length === 1
-                    ? '1 Log Type'
-                    : `${Object.keys(processedData.args).length} Log Types`}
-                  )
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium w-[100px] max-w-[100px]">
-                  <ScrollArea className="h-72">
-                    {Object.entries(processedData.exceptions).map(
-                      ([exceptionType, descriptions]) => (
-                        <div key={exceptionType}>
-                          <span
-                            className={`${
-                              exceptionType === 'Uncaught'
-                                ? 'text-red-500'
-                                : 'text-gray-500'
-                            }`}
-                          >
-                            {exceptionType}:{''}
-                          </span>
-                          <ul key={exceptionType}>
-                            {Object.entries(descriptions).map(
-                              ([description, { count }]) => (
-                                <ContextMenu key={description}>
+          {Object.keys(processedData.exceptions).length === 0 &&
+          Object.keys(processedData.args).length === 0 ? (
+            <ConsoleAndNetworkTableLoading />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    Console - (
+                    {Object.keys(processedData.exceptions).length === 1
+                      ? '1 Exception Type'
+                      : `${Object.keys(processedData.exceptions).length} Exception Types`}
+                    ,{' '}
+                    {Object.keys(processedData.args).length === 1
+                      ? '1 Log Type'
+                      : `${Object.keys(processedData.args).length} Log Types`}
+                    )
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium w-[100px] max-w-[100px]">
+                    <ScrollArea className="h-72">
+                      {Object.entries(processedData.exceptions).map(
+                        ([exceptionType, descriptions]) => (
+                          <div key={exceptionType}>
+                            <span
+                              className={`${
+                                exceptionType === 'Uncaught'
+                                  ? 'text-red-500'
+                                  : 'text-gray-500'
+                              }`}
+                            >
+                              {exceptionType}:{''}
+                            </span>
+                            <ul key={exceptionType}>
+                              {Object.entries(descriptions).map(
+                                ([description, { count }]) => (
+                                  <ContextMenu key={description}>
+                                    <ContextMenuTrigger asChild>
+                                      <li
+                                        key={description}
+                                        className="ml-4 list-disc break-words cursor-pointer hover:bg-gray-300"
+                                        onClick={() => {
+                                          handleCopyToClipboard(
+                                            description,
+                                            `${exceptionType} Type`
+                                          );
+                                        }}
+                                      >
+                                        <span>{description}</span>
+                                        <strong> ({count})</strong>
+                                      </li>
+                                    </ContextMenuTrigger>
+                                    <ContextMenuContent>
+                                      <ContextMenuItem
+                                        onClick={() => {
+                                          handleSearchWithGoogle(description);
+                                        }}
+                                      >
+                                        <a className="mr-2">
+                                          <Image
+                                            src="https://cdn3.emoji.gg/emojis/8515-google.png"
+                                            width={16}
+                                            height={16}
+                                            alt="Google"
+                                          />
+                                        </a>{' '}
+                                        Search With Google
+                                      </ContextMenuItem>
+                                    </ContextMenuContent>
+                                  </ContextMenu>
+                                )
+                              )}
+                            </ul>
+                          </div>
+                        )
+                      )}
+
+                      {Object.entries(processedData.args).map(
+                        ([type, logs]) => (
+                          <div key={type}>
+                            <span
+                              className={`${
+                                type === 'error'
+                                  ? 'text-red-500'
+                                  : type === 'warning'
+                                    ? 'text-yellow-500'
+                                    : type === 'info'
+                                      ? 'text-blue-500'
+                                      : 'text-gray-500'
+                              }`}
+                            >
+                              {type}:{' '}
+                            </span>
+                            <ul key={type}>
+                              {Object.entries(logs).map(([value, count]) => (
+                                <ContextMenu key={value}>
                                   <ContextMenuTrigger asChild>
                                     <li
-                                      key={description}
+                                      key={value}
                                       className="ml-4 list-disc break-words cursor-pointer hover:bg-gray-300"
                                       onClick={() => {
-                                        handleCopyToClipboard(
-                                          description,
-                                          `${exceptionType} Type`
-                                        );
+                                        handleCopyToClipboard(value, type);
                                       }}
                                     >
-                                      <span>{description}</span>
-                                      <strong> ({count})</strong>
+                                      {`${value}`}
+                                      <strong className="text-bold">
+                                        {' '}
+                                        {`(${count})`}
+                                      </strong>
                                     </li>
                                   </ContextMenuTrigger>
                                   <ContextMenuContent>
                                     <ContextMenuItem
                                       onClick={() => {
-                                        handleSearchWithGoogle(description);
+                                        handleSearchWithGoogle(value);
                                       }}
                                     >
                                       <a className="mr-2">
@@ -147,73 +208,17 @@ export default function ConsoleAndNetworkTable({
                                     </ContextMenuItem>
                                   </ContextMenuContent>
                                 </ContextMenu>
-                              )
-                            )}
-                          </ul>
-                        </div>
-                      )
-                    )}
-
-                    {Object.entries(processedData.args).map(([type, logs]) => (
-                      <div key={type}>
-                        <span
-                          className={`${
-                            type === 'error'
-                              ? 'text-red-500'
-                              : type === 'warning'
-                                ? 'text-yellow-500'
-                                : type === 'info'
-                                  ? 'text-blue-500'
-                                  : 'text-gray-500'
-                          }`}
-                        >
-                          {type}:{' '}
-                        </span>
-                        <ul key={type}>
-                          {Object.entries(logs).map(([value, count]) => (
-                            <ContextMenu key={value}>
-                              <ContextMenuTrigger asChild>
-                                <li
-                                  key={value}
-                                  className="ml-4 list-disc break-words cursor-pointer hover:bg-gray-300"
-                                  onClick={() => {
-                                    handleCopyToClipboard(value, type);
-                                  }}
-                                >
-                                  {`${value}`}
-                                  <strong className="text-bold">
-                                    {' '}
-                                    {`(${count})`}
-                                  </strong>
-                                </li>
-                              </ContextMenuTrigger>
-                              <ContextMenuContent>
-                                <ContextMenuItem
-                                  onClick={() => {
-                                    handleSearchWithGoogle(value);
-                                  }}
-                                >
-                                  <a className="mr-2">
-                                    <Image
-                                      src="https://cdn3.emoji.gg/emojis/8515-google.png"
-                                      width={16}
-                                      height={16}
-                                      alt="Google"
-                                    />
-                                  </a>{' '}
-                                  Search With Google
-                                </ContextMenuItem>
-                              </ContextMenuContent>
-                            </ContextMenu>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </ScrollArea>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+                              ))}
+                            </ul>
+                          </div>
+                        )
+                      )}
+                    </ScrollArea>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
