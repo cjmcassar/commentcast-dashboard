@@ -85,7 +85,8 @@ const IssueTable = (props: Props) => {
     };
 
     fetchIssues();
-  }, [currentPage, issuesPerPage, supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, issuesPerPage]);
 
   return (
     <div>
