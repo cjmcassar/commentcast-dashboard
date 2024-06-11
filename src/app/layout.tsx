@@ -1,5 +1,6 @@
 import { PHProvider } from '@/components/config/PostHogProvider';
 import { ThemeProvider } from '@/components/config/ThemeProvider';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 
 import dynamic from 'next/dynamic';
@@ -39,7 +40,9 @@ export default function RootLayout({
         >
           <PHProvider>
             <PostHogPageView />
-            <main>{children}</main> <Toaster />
+            <main>{children}</main>
+            <SpeedInsights />
+            <Toaster />
           </PHProvider>
         </ThemeProvider>
       </body>
