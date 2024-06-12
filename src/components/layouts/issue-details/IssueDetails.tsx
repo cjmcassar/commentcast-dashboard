@@ -235,6 +235,16 @@ const IssueDetails = ({ slug }: Props) => {
                   <TableBody className="">
                     <TableRow>
                       <TableCell
+                        className="hidden md:table-cell cursor-pointer"
+                        onClick={() =>
+                          handleCopyToClipboard(issue.url || '', 'Source URL')
+                        }
+                      >
+                        <strong>Source URL:</strong> {issue.url}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell
                         className="cursor-pointer"
                         onClick={() =>
                           handleCopyToClipboard(
@@ -259,16 +269,7 @@ const IssueDetails = ({ slug }: Props) => {
                         <strong>Platform OS:</strong> {issue.platform_os}
                       </TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell
-                        className="hidden md:table-cell cursor-pointer"
-                        onClick={() =>
-                          handleCopyToClipboard(issue.url || '', 'Source URL')
-                        }
-                      >
-                        <strong>Source URL:</strong> {issue.url}
-                      </TableCell>
-                    </TableRow>
+
                     <TableRow>
                       <TableCell
                         className="hidden md:table-cell cursor-pointer"
