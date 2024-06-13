@@ -1,4 +1,4 @@
-import ConsoleAndNetworkTableLoading from '@/components/layouts/issue-details/ConsoleAndNetworkTableLoading';
+import ConsoleAndNetworkTableLoading from '@/components/layouts/issue-details/console-and-network-table/ConsoleAndNetworkTableLoading';
 import { Issue } from '@/types/issue';
 
 import React from 'react';
