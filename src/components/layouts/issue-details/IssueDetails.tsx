@@ -3,8 +3,8 @@
 import DeleteDialogue from '@/components/layouts/DeleteDialogue';
 import ImageDialogue from '@/components/layouts/ImageDialogue';
 import ShareDialogue from '@/components/layouts/ShareDialogue';
-import ConsoleAndNetworkTable from '@/components/layouts/issue-details/ConsoleAndNetworkTable';
 import IssueDetailsLoading from '@/components/layouts/issue-details/IssueDetailsLoading';
+import ConsoleAndNetworkTable from '@/components/layouts/issue-details/console-and-network-table/ConsoleAndNetworkTable';
 import { Issue } from '@/types/issue';
 import { handleDeleteClick } from '@/utils/deleteIssueUtils';
 import { handleShareClick } from '@/utils/shareUtils';
@@ -70,7 +70,9 @@ const IssueDetails = ({ slug }: Props) => {
       let query = supabase.from('issue_snapshots').select('*').eq('id', slug);
 
       if (user) {
-        query = query.or(`uuid.eq.${user.id},shared_with.cs.{${user.email}}`);
+        query = query.or(
+          `uuid.eq.${user.id},shared_with.cs.{${user.email}}, is_public.eq.true`
+        );
       } else {
         query = query.eq('is_public', true);
       }
