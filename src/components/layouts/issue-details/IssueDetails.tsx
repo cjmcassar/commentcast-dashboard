@@ -39,6 +39,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
 
 type Props = {
@@ -240,9 +245,15 @@ const IssueDetails = ({ slug }: Props) => {
                           handleCopyToClipboard(issue.url || '', 'Source URL')
                         }
                       >
-                        <strong>Source URL:</strong> {issue.url}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <strong>Source URL:</strong> {issue.url}
+                          </TooltipTrigger>
+                          <TooltipContent>Click to copy</TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
+
                     <TableRow>
                       <TableCell
                         className="cursor-pointer"
@@ -253,7 +264,13 @@ const IssueDetails = ({ slug }: Props) => {
                           )
                         }
                       >
-                        <strong>Platform Arch:</strong> {issue.platform_arch}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <strong>Platform Arch:</strong>{' '}
+                            {issue.platform_arch}
+                          </TooltipTrigger>
+                          <TooltipContent>Click to copy</TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -266,7 +283,12 @@ const IssueDetails = ({ slug }: Props) => {
                           )
                         }
                       >
-                        <strong>Platform OS:</strong> {issue.platform_os}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <strong>Platform OS:</strong> {issue.platform_os}
+                          </TooltipTrigger>
+                          <TooltipContent>Click to copy</TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
 
@@ -280,10 +302,15 @@ const IssueDetails = ({ slug }: Props) => {
                           )
                         }
                       >
-                        <strong>Primary Display:</strong>{' '}
-                        {issue.primary_display_dimensions
-                          ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
-                          : 'N/A'}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <strong>Primary Display:</strong>{' '}
+                            {issue.primary_display_dimensions
+                              ? `${issue.primary_display_dimensions.primary_display_width} x ${issue.primary_display_dimensions.primary_display_height}`
+                              : 'N/A'}
+                          </TooltipTrigger>
+                          <TooltipContent>Click to copy</TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -296,7 +323,12 @@ const IssueDetails = ({ slug }: Props) => {
                           )
                         }
                       >
-                        <strong>Browser Name:</strong> {issue.browser_name}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <strong>Browser Name:</strong> {issue.browser_name}
+                          </TooltipTrigger>
+                          <TooltipContent>Click to copy</TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                     <TableRow>
@@ -306,18 +338,23 @@ const IssueDetails = ({ slug }: Props) => {
                           handleCopyToClipboard(issue.created_at || '', 'Date')
                         }
                       >
-                        <strong>Date:</strong>{' '}
-                        {new Date(issue.created_at).toLocaleDateString(
-                          'en-UK',
-                          {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            hour12: true,
-                          }
-                        )}
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <strong>Date:</strong>{' '}
+                            {new Date(issue.created_at).toLocaleDateString(
+                              'en-UK',
+                              {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: 'numeric',
+                                hour12: true,
+                              }
+                            )}
+                          </TooltipTrigger>
+                          <TooltipContent>Click to copy</TooltipContent>
+                        </Tooltip>
                       </TableCell>
                     </TableRow>
                   </TableBody>
