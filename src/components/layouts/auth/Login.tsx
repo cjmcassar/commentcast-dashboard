@@ -20,7 +20,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
 
-export default function LoginForm({ login }: { login: any; signup: any }) {
+export default function LoginForm({
+  login,
+  signup,
+  loginWithGoogle,
+}: {
+  login: any;
+  signup: any;
+  loginWithGoogle: any;
+}) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -107,6 +115,7 @@ export default function LoginForm({ login }: { login: any; signup: any }) {
           <Button type={'submit'} className="w-full">
             Login
           </Button>
+
           {/* button to show toast */}
         </form>
         <div className="mt-4 text-center text-sm">
