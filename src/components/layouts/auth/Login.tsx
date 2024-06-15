@@ -22,8 +22,6 @@ import { useToast } from '@/components/ui/use-toast';
 
 export default function LoginForm({
   login,
-  signup,
-  loginWithGoogle,
 }: {
   login: any;
   signup: any;
