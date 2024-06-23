@@ -30,3 +30,16 @@ export async function login(formData: FormData): Promise<LoginResponse> {
 
   return { success: true, error: null };
 }
+
+export async function loginWithGoogle() {
+  const supabase = createClient();
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  return { success: true, error: null };
+}
